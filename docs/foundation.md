@@ -33,7 +33,9 @@ Public visibility, PR-only main, one approval after the latest push, stale-revie
 dismissal, code-owner review, resolved conversations, squash-only linear history,
 and no bypass are configured in GitHub. The `foundation` and `pr-record` checks
 are bound to GitHub Actions after successful first runs. CODEOWNERS and Dependabot
-become default-branch configuration after the human-approved foundation merge.
+are now active on the default branch following the approved foundation merge.
+PR #2 merged as `1d9fbe2edddf97a678bf3b7d5e93b521f5796c07`; main CI passed.
+See the [merge verification](https://github.com/Himanshu-singh04/shiftproof/pull/2#issuecomment-6974823754).
 
 No application, product tests, release artifacts, or dedicated project server
 have been created. Those are subsequent milestones, not implied by green CI.

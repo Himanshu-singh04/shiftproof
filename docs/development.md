@@ -18,8 +18,43 @@ python3 /Volumes/AIWorkspace/portfolio/tools/agent-auth.py shiftproof gh pr crea
 The helper creates a token scoped to one repository, passes it through process
 environment, and revokes it when the command finishes. Never print tokens or put
 them in remote URLs. The owner-only App key lives on the Mac outside the projects.
-Human `gh` authentication is reserved for repository administration; approvals
-must be submitted by the human reviewer, not an agent using that login.
+Human `gh` authentication is used for authorized repository administration and
+explicitly delegated approval submissions. The founder reviews the linked PR
+and coordinator briefing, then approves the identified revision in coordinator
+chat. Only after that decision may the coordinator submit an `APPROVE` review
+through the founder's existing account, using the review API's explicit
+`commit_id`. The review must quote or faithfully record the authorization, link
+the briefing, name the founder as decision-maker, and disclose submission by
+the coordinator on their behalf. Workers cannot submit approvals.
+
+Verify the recorded review's owner, state, and commit. Recheck required CI,
+unresolved threads, current head, and final squash trailers immediately before
+merge. A changed head requires renewed review and explicit approval; general
+workflow consent never approves a future PR. Do not duplicate an existing valid
+owner approval or treat a bot review as the founder's decision. This protocol,
+authorized on 2026-11-18, supersedes the earlier personal-click-only rule.
+
+Use the scoped App helper's guarded merge command after approval:
+
+```sh
+python3 /Volumes/AIWorkspace/portfolio/tools/agent-auth.py shiftproof gh pr merge NUMBER --squash --message-file SNAPSHOT.json --message-sha256 REVIEWED_SHA256
+```
+
+Before approval, freeze a UTF-8 JSON object containing exactly `repository`
+(`Himanshu-singh04/shiftproof`), integer `number`, `head`, `title`, and `body`.
+Validate the snapshot title/body against the full commit list with the PR-policy
+validator and inspect final Git trailers. Record the exact message and file SHA-256
+in the approval briefing; retain the file on the pendrive outside the checkout.
+Replace the placeholders with that approved PR, file, and recorded digest; do not
+recompute the approved digest from an edited file. A changed message requires a
+new briefing and explicit approval even when the head is unchanged.
+
+The helper verifies the snapshot digest, repository/PR/head binding and actual
+current-head owner approval. It reads the message once and supplies explicit
+`--subject`/`--body`, alongside `--match-head-commit`, so later PR-body edits cannot
+change the squash message. Bare `--squash` is rejected. This is an operator guard,
+not a GitHub-wide permissions boundary. Record approval ID, merge SHA,
+attribution, and main CI in the PR timeline. Preserve prior review comments.
 
 ## Attribution
 
@@ -36,7 +71,7 @@ model account. A different model uses its own truthful display name and the same
 portfolio bot email. List multiple agents when each actually contributed.
 Copy every co-author trailer into a final plain-text trailer block in the PR body,
 separated from the preceding prose by a blank line. Keep this block after any
-automated summaries. Squash defaults use the PR title and body. The validator
+automated summaries. GitHub's mutable squash defaults must not be relied on. The validator
 uses `git interpret-trailers --parse`, so a co-author line in the middle of prose
 does not count. Inspect the exact final squash message immediately before merge
 and verify the resulting commit; body edits after CI can invalidate attribution.
