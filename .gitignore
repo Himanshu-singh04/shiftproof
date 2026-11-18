@@ -1,0 +1,43 @@
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+/secrets/
+
+# Dependencies and build output
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+coverage/
+*.egg-info/
+
+# Local state and large/generated data (reviewed fixtures belong in fixtures/)
+/models/
+/caches/
+/.cache/
+/artifacts/
+/local-data/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+*.gguf
+*.safetensors
+*.log
+
+# macOS metadata
+.DS_Store
+._*
