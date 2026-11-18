@@ -6,11 +6,22 @@ Local-first analysis of behavioral compatibility when upgrading a third-party SD
 
 ## Initial goal
 
-Inspect one TypeScript SDK migration using versioned documentation, affected call sites, and behavioral checks. Produce evidence-backed findings and reviewable patch proposals, keeping unresolved capability gaps visible.
+Inspect one TypeScript SDK upgrade using versioned documentation, affected call sites, and offline behavioral fixtures. Produce traceable local reports with explicit coverage gaps. Optional reviewable patch proposals and code transformations are deferred.
 
 ## Status
 
-Repository foundation is under review. The first SDK/version pair, implementation, and dedicated OpenCode project session are pending. No application commands exist yet; foundation checks are documented below.
+Repository foundation exists; product planning is proposed for review under [issue #4](https://github.com/Himanshu-singh04/shiftproof/issues/4). The first SDK/package/source/target version pair is **unselected**. No product runtime, validated compatibility results, release artifacts, or persistent project workers exist. TypeScript/Node CLI architecture and exact runtime decisions require review. Existing checks are in [CONTRIBUTING](CONTRIBUTING.md).
+
+## Product planning
+
+- [Product requirements](docs/product.md): users, scope, requirement IDs and pilot hypotheses.
+- [Solution design](docs/specs/001-mvp/solution-design.md): proposed components, interfaces and pending ADRs.
+- [Evidence contract](docs/evidence-contract.md): exact statuses, coverage, provenance and missing evidence.
+- [Roadmap](docs/roadmap.md): bounded selection spike and dependency-ordered tasks.
+- [Testing](docs/testing.md): planned product/evaluation gates and unmeasured targets.
+- [Operations](docs/operations.md): storage reality, proposed install/run/recovery and deployment.
+
+Compilation is not behavioral proof. Offline synthetic/mocked results do not establish actual remote-service compatibility or universal migration safety.
 
 ## Development workspace
 
@@ -30,4 +41,4 @@ agent attribution, and evidence requirements.
 - Report the commit and push result to the coordinator. A local commit is not a remote backup until the push succeeds.
 - Use task branches for substantive implementation work and preserve unrelated changes.
 
-Detailed plans and project-specific working instructions will follow during project planning.
+Source and docs are on the pendrive; execution uses Mac CPU/RAM. Current coordinator history and credentials remain on the Mac. Model/cache directories exist but routing is not configured. See [operations](docs/operations.md) for the full storage boundary.
