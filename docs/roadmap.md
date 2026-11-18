@@ -11,12 +11,16 @@ See [product](product.md), [design](specs/001-mvp/solution-design.md),
 | Milestone | Depends on | Observable exit | Verification |
 | --- | --- | --- | --- |
 | M0: scope and selection | Planning review | One justified pair selected or documented no-go; runtime/isolation options measured enough to decide | B01–B03 records reviewed |
-| M1: evidence and discovery | M0, ADR confirmation | Exact identity and bounded discovery produce validated unknown reports | B04–B05 contract/negative tests |
+| M1: evidence and discovery | M0, ADR confirmation | Exact identity and bounded discovery produce validated unknown evidence records | B04–B05 contract/negative tests |
 | M2: offline differential | M1, isolation gate | Same fixtures expose a known difference and a known equal case with honest gaps | B06–B08 golden/e2e tests |
 | M3: local MVP | M2 | Installable local artifact, JSON/Markdown parity, reproducibility and recovery demonstrated | B09–B10 release rehearsal |
 | M4: limited pilot | M3, consent | At most three upgrade reviews with documented usability outcomes | B11 task observations, no invented validation |
 | M5: optional explanations | M3 and separate approval | Local/customer-owned model passes bounded evidence eval or remains disabled | B12 offline eval |
 | Later: harness/proposals | Separate scope approval | Explicit trust contract and inert proposals reviewed | B13 design/tests before implementation |
+
+M1 validates RunRecord values, including explicit unknown outcomes/obligations,
+through contract tests; it does not require a report writer. User-facing JSON/Markdown
+report publication remains B09 in M3, after M2's differential evidence pipeline.
 
 ## Initial bounded task: B01 SDK/version selection spike
 

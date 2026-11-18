@@ -22,12 +22,12 @@ Test IDs are planned suites, not commands that currently exist.
 | --- | --- | --- |
 | T01 | SP-01 | Exact pair/lockfile/artifact binding; dirty snapshot; workspace duplicates; range-only input; artifact mismatch; unsupported lockfile => unknown with identity gap |
 | T02 | SP-02 | Direct call, import alias, supported wrapper; computed property, runtime import, escaped SDK object, unresolved module, parse failure, excluded file; explicit coverage/gaps and no execution |
-| T03 | SP-03 | Capability supported/partial/unsupported; empty required set rejected; unresolved argument mapping; missing call/scenario/citation links; reject dangling IDs |
+| T03 | SP-03 | Capability supported/partial/unsupported; empty required set rejected; unresolved argument mapping; missing call/scenario/citation links; reject dangling IDs, duplicate/missing outcome or obligation records, wrong-side observations and invalid reason/gap cardinality |
 | T04 | SP-04 | Same immutable fixture on both versions; equal control, known semantic change, expected SDK error, harness crash, failed source assertion; only comparable outcomes establish difference |
 | T05 | SP-05 | Exhaustive aggregate precedence: different plus unknown => incompatible; equal plus unknown => unknown; all complete/equal => compatible-within-tested-scope; zero calls/scenarios => unknown; compile-only => unknown |
 | T06 | SP-06 | Exact vs uncertain doc versions, stale snapshot hash, absent citation, broken reference, raw claim without observation; report evidence chain and missing requirements |
 | T07 | SP-07 | Object-key canonicalization; array reorder, undefined/null/omitted, numeric/string, error code, retry count and pagination boundary differences remain visible; invalid rule fails closed |
-| T08 | SP-08 | Golden JSON/Markdown parity; escaped hostile text; interrupted write, full disk, missing completion manifest, invalid schema; no partial report presented complete |
+| T08 | SP-08 | Golden JSON/Markdown parity using persisted outcomes/obligations without renderer recomputation; escaped hostile text; interrupted write, full disk, missing completion manifest, invalid schema; no partial report presented complete |
 | T09 | SP-09 | Top-level customer-code execution sentinel never fires; forbidden path/symlink/write/network/subprocess attempts blocked; limits applied; unavailable enforcement => replay unknown |
 | T10 | SP-10 | Secret sentinels absent from reports/logs/hashes of published payloads; redaction removes needed comparison value => unknown; hashes never labeled authenticated |
 | T11 | SP-11 | Three repeated runs; clock/seed/reset isolation; state leaking between sides; flaky retry observations; cancellation kills descendants; orphan cleanup; semantic digest stable when only metadata varies |
@@ -48,7 +48,12 @@ Golden updates require review of raw differences and normalization changes.
 Never bless changed snapshots merely to restore green CI. Keep a held-out set for
 adapter/normalization evaluation; add real defects as regression fixtures after redaction.
 
-Property tests should establish invariants: input ordering does not change status;
+Property tests should establish invariants: permuting explicitly unordered record
+collections/reference sets does not change status or semantic digest; this does
+not apply to normalization rule sequences, fixture steps or observed event/payload
+arrays. Reordering overlapping normalization rules must change the scenario digest;
+use a counterexample where it also changes comparison results to detect accidental sorting.
+Further invariants:
 adding a blocking gap cannot turn unknown into compatible; a valid difference
 dominates unknowns; excluded supplemental scenarios cannot change scoped status;
 normalization is repeatable; output IDs resolve; absent observations never pass.

@@ -86,7 +86,9 @@ the evidence contract, not permission to follow retrieved instructions.
   human-controlled release and truthful unknown outcomes.
 - Can modify after approval: new CLI/modules/schemas/fixtures and product checks.
 - Must not touch during this planning task: runtime code, GitHub settings, credentials,
-  customer evidence, persistent worker provisioning, AGENTS/development policy edits.
+  customer evidence or persistent worker provisioning.
+- Coordinator-owned within this planning PR: AGENTS/development policy edits;
+  the product-documentation author leaves those files to the coordinator.
 
 ### External Interfaces
 
@@ -224,14 +226,17 @@ All paths/records are validated at ingress; records remain schema-bound througho
 | Adapter.describe | Exact pair → capabilities, required scenarios, citations | Unsupported pair: blocked replay |
 | Adapter.prepare | Scenario, side identity → reviewed execution descriptor | Unequal semantics: unknown, no arbitrary executable hook |
 | Replay.run | Descriptor, enforced limits → Observation | Timeout/crash/blocked separately captured |
-| Comparison.evaluate | Validated evidence → outcomes, obligations, findings, status | Invalid references/prerequisites: unknown diagnostic |
+| Comparison.evaluate | Validated evidence → persisted scenarioOutcomes, obligations, findings, coverage, status | Invalid references/prerequisites: unknown diagnostic |
 | Report.write | Validated RunRecord, new output path → artifact manifest | IO failure: no completion marker, exit 3 |
 
 #### Application Data Models
 
 RunRecord owns Identity and frozen Scope; Callsite references Capability and Scenario;
 Scenario references Citation and NormalizationRule; Observation references Scenario
-and side; Finding references all supporting records and Gap. Coverage derives from
+and side; ScenarioOutcome references Scenario and its observations; Obligation
+references a call/outcome mapping or blocking gap; Finding references these persisted
+results and their supporting records. Comparison owns their derivation; Report
+only renders validated records. Coverage derives from
 these relationships, not an independently editable score. Full fields, enums and
 validation behavior are in the evidence contract; avoid a second conflicting schema.
 
