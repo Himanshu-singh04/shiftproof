@@ -281,7 +281,8 @@ Write artifacts into a new run directory, then publish a completion manifest las
 An interrupted directory without that manifest is partial and cannot be consumed
 as a completed report. Readers verify hashes and referenced files before display.
 
-The semantic digest covers canonical JSON of identity, scope, typed observations,
+The semantic digest covers canonical JSON of identity, scope, complete scenario
+descriptors (including ordered `normalizationRuleIds`), typed observations,
 rules, `scenarioOutcomes`, `obligations`, aggregate status and gaps, preserving the
 ordered/unordered distinctions above. Exclude run ID, wall-clock timestamps, elapsed durations,
 absolute local paths and diagnostic log ordering; list those separately as metadata.
