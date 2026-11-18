@@ -9,7 +9,7 @@ Normative words below specify intended implementation behavior, not current func
 A `RunRecord` contains `schemaVersion`, `runId`, `state`, `createdAt`, `identity`,
 `scope`, `capabilities`, `callsites`, `scenarios`, `observations`, `citations`,
 `normalizations`, `gaps`, `scenarioOutcomes`, `obligations`, `findings`, `coverage`,
-`status`, and `semanticDigest`.
+`status`, `semanticDigest`, and `operationalMetadata`.
 `state` is `pending | running | complete | failed | cancelled`.
 `status` is `compatible-within-tested-scope | incompatible | unknown`.
 Only a complete record can be compatible. A failed/cancelled record may retain
@@ -17,7 +17,21 @@ an already validated incompatibility, with its incomplete-run banner and gaps.
 
 - IDs are unique within a bundle; references must resolve and types must match.
 - Strings are UTF-8; timestamps are UTC ISO-8601; byte counts are nonnegative integers.
-- Paths are repository-relative POSIX paths; absolute paths and `..` escapes are rejected.
+- Stored source-code paths (`Callsite.file`, source file manifests) are relative to
+  the immutable repository snapshot. Stored artifact paths (`redactedArtifact`,
+  local `Citation.urlOrPath`, fixture/doc snapshots and completion-manifest entries)
+  are relative to the immutable run bundle, not the repository or current directory.
+  Resolution paths in lock/package identity are logical package keys, not host paths.
+- Both stored path classes use POSIX separators and reject absolute paths, `.`/`..`
+  segments, empty segments, controls, backslashes, URI schemes and percent-encoded
+  forms. Resolve beneath the appropriate verified base and reject symlinks or other
+  filesystem redirection outside it; lexical checks alone are insufficient.
+  Local citation copies live in the bundle even when quoting repository source;
+  source file/range provenance remains a separate repository-relative reference.
+- Operator manifest paths may be absolute or relative to the manifest's directory;
+  CLI output paths are relative to the invocation directory unless absolute. These
+  inputs are resolved/validated once against explicit source, provisioning and output
+  bases. Host roots belong only to operational metadata, never stored evidence links.
 - Source positions are one-based lines and columns, with exclusive end positions.
 - Required lists are present even when empty. Unknown values use `null` plus a gap;
   absent required fields make the record invalid, not equivalent to an empty value.
@@ -71,6 +85,19 @@ record licensing/retention restrictions. A URL alone is insufficient for a claim
 Documentation may explain an expectation; it cannot substitute for an observation.
 Primary-doc claims need exact applicability; uncertainty creates a gap for that claim.
 No selected SDK documentation or external API behavior is claimed in this plan.
+
+Citation link policy is closed: only parsed absolute `https://` URLs with a host
+and no userinfo, or contained run-relative paths under the rules above, may become
+links. Reject all other schemes (including javascript, data, file and HTTP),
+protocol-relative targets, controls, backslashes and leading/trailing whitespace.
+For HTTPS, reject malformed escapes and any percent-decoding layer that introduces
+controls, backslashes, encoded separators or `.`/`..` path segments; reject nested
+encoding of these forms too. Do not repair a rejected target into an allowed one.
+Invalid targets produce `CITATION_UNSAFE`; required citation evidence is missing.
+Untrusted hrefs, raw HTML and Markdown from sources remain escaped inert text,
+never copied as links or autolinks. Only the renderer constructs links from validated
+Citation targets with correct destination escaping. Validation does not fetch URLs
+or establish publisher trust; report viewing must not auto-load remote content.
 
 ## Call-site and capability records
 
@@ -198,8 +225,10 @@ available attempts in `observationIds` for diagnosis rather than selecting favor
   are null and `gapIds` contains exactly that Gap ID. Nonblocking informational
   gaps remain displayed but do not create required obligations.
 
-Mapping state is unknown if mapping/capability/citation prerequisites fail or its
-scenario outcome is unknown; otherwise equivalent yields pass and different yields
+Mapping prerequisites include evidence that the scenario represents the call's
+arguments/usage, not just its method name. Mapping state is unknown if these or
+mapping/capability/citation prerequisites fail or its scenario outcome is unknown;
+otherwise equivalent yields pass and different yields
 fail. Pass uses exactly `["EVIDENCE_COMPLETE"]`, fail exactly `["MATERIAL_DIFFERENCE"]`,
 both with empty `gapIds`. Unknown requires nonempty `gapIds` and exactly their
 distinct codes as `reasonCodes`. Both gap kinds are always unknown. Missing mapping
@@ -234,20 +263,25 @@ Evaluate in this order:
 
 Create the required mapping, callsite-gap and scope-gap obligations defined above.
 A mapping obligation passes only when its mapping is covered, capability supported,
-all required citations are exact, and its scenario is equivalent; a valid different
-outcome with those prerequisites yields fail.
+all required citations are exact, arguments/usage are represented, and its scenario
+is equivalent; a valid different outcome with those prerequisites yields fail.
 Partial or unsupported capability, unresolved call, parse failure, missing mapping,
 missing scenario or missing evidence makes the obligation unknown.
 
 Aggregate a structurally valid record in this exact order:
 
-1. If any valid in-scope required scenario is different: **incompatible**.
+1. If any validated in-scope `mapping` obligation has state `fail`: **incompatible**.
 2. Else, if state is not complete, no resolved calls or no required scenarios exist,
    any obligation is unknown, or any blocking run gap exists: **unknown**.
 3. Else: **compatible-within-tested-scope**.
 
-Do not count unmapped demonstration scenarios toward compatibility or incompatibility;
-show them as supplemental evidence. A known incompatibility outranks unknown gaps,
+Different scenario observations alone never establish scoped incompatibility. If
+every mapping to a different scenario is unknown (unsupported capability or
+unrepresentative arguments, for example), retain the fixture difference as
+supplemental evidence and its mappings as unknown. A scenario shared by a valid
+fail mapping and an unknown mapping establishes incompatibility only for the valid
+mapping; it cannot implicate the unsupported call. Unmapped demonstration scenarios
+also do not change aggregate status. A validated fail mapping outranks unknown gaps,
 but the report still displays every gap. A known difference establishes a behavioral
 change under the fixture, not necessarily that the target SDK is defective.
 Approval of an intentional behavior change does not rewrite historical evidence.
@@ -266,26 +300,71 @@ and `nextAction`. Core codes include `PAIR_UNRESOLVED`, `PARSE_FAILED`,
 `DYNAMIC_CALL`, `CAPABILITY_UNSUPPORTED`, `SCENARIO_MISSING`, `CITATION_MISSING`,
 `VERSION_MISMATCH`, `ISOLATION_UNAVAILABLE`, `TIMEOUT`, `NONDETERMINISTIC`,
 `CAPTURE_INCOMPLETE`, `REDACTION_LOSS`, `IO_FAILURE`, `NOT_RUN`, `BASELINE_FAILED`,
-and `MAPPING_INCOMPLETE`.
+`MAPPING_INCOMPLETE`, and `CITATION_UNSAFE`.
 Blocking is determined by the frozen scope/policy, not an LLM or post-hoc override.
 
 A `Finding` has `id`, `status`, `callsiteIds`, `scenarioIds`, `scenarioOutcomeIds`,
 `obligationIds`, `observationIds`, `citationIds`, `gapIds`, `changedPaths`,
 `explanation`, and `nextActions`. Outcome/obligation references resolve to the
-persisted collections; at least one of these two reference lists is nonempty.
-Comparison assigns finding status from that referenced evidence using the same
-precedence as aggregation; Report displays the persisted value, never re-derives it.
+persisted collections. Each finding must have exactly one of these evidence roots:
+
+- A callsite case: `obligationIds` is the nonempty set of all obligations for one callsite,
+  including its callsite-gap obligation. `callsiteIds` is exactly that singleton;
+  `scenarioOutcomeIds` is exactly the non-null outcomes referenced by those obligations.
+- A scope-gap case: exactly one scope-gap obligation, with empty callsite/outcome sets.
+- A supplemental case: no obligations, exactly one scenario outcome and no callsites.
+  This describes fixture behavior only, never attributing it to application code.
+
+The remaining lists must equal the following closure, not merely contain valid IDs:
+`scenarioIds` = scenarios of the rooted outcomes; `observationIds` = union of those
+outcomes' observations. Reach capabilities through those scenarios and the rooted
+callsite, and rules through those scenarios' ordered rule references. `citationIds`
+is exactly the union of scenario citations, reachable capability-required citations
+and reachable rule citations. `gapIds` is exactly the union of gaps on rooted
+obligations/outcomes and reachable callsite, capabilities and observations. Scope-gap
+cases consequently contain only their gap and no scenario/observation/citation IDs.
+Do not follow a scenario's other `callsiteIds` or a capability's other scenarios:
+shared fixtures never expand a finding to another callsite. Gap scopes must match
+this closure (or explicit run-level prerequisites); cross-case gaps are invalid.
+Missing or extra references, mixed roots and cross-case evidence invalidate the
+RunRecord even if every ID exists. Renderers check closure without recalculating status.
+
+Comparison alone assigns callsite finding status: a validated fail mapping wins;
+otherwise any unknown obligation or incomplete run yields unknown; otherwise all
+its obligations must pass for compatible-within-tested-scope. Scope-gap and
+supplemental findings are always unknown; the latter may display their separate
+fixture outcome. A scoped finding's `changedPaths` is exactly the union from its
+fail mappings' outcomes (empty if none); supplemental findings use their sole
+outcome's paths. Report displays these persisted values, never re-derives them.
 Initial explanations use deterministic templates, never invented causal diagnoses.
-Markdown is rendered only from validated JSON; escape source/doc text as data.
+Markdown is rendered only from validated JSON; escape source/doc text as data and
+apply the closed citation-link policy before constructing any link.
 Write artifacts into a new run directory, then publish a completion manifest last.
 An interrupted directory without that manifest is partial and cannot be consumed
-as a completed report. Readers verify hashes and referenced files before display.
+as a completed report. Publication stays bound to verified directory/mount handles
+through all writes/renames and the completion marker; identity loss suppresses the
+marker, with no pathname fallback or directory recreation. Platform feasibility is
+an explicit release gate in operations. Readers verify hashes and referenced files
+against their declared source/bundle bases before display.
 
-The semantic digest covers canonical JSON of identity, scope, complete scenario
-descriptors (including ordered `normalizationRuleIds`), typed observations,
-rules, `scenarioOutcomes`, `obligations`, aggregate status and gaps, preserving the
-ordered/unordered distinctions above. Exclude run ID, wall-clock timestamps, elapsed durations,
-absolute local paths and diagnostic log ordering; list those separately as metadata.
+The semantic digest hashes the canonical projection of the **whole RunRecord**,
+including schema/state, identity/scope, capabilities, callsites, complete scenarios,
+observations, citations, normalizations, outcomes, obligations, gaps, findings,
+coverage and status. Preserve the ordered/unordered rules above. The only excluded
+locations are `/semanticDigest` (self-reference), `/runId`, `/createdAt`,
+`/observations/*/durationMs` (harness elapsed time only), and `/operationalMetadata`.
+The latter has a closed shape: `sourceRoot`, `bundleRoot`, `provisioningRoots`
+(host locations), `stageTimings` (stage/elapsedMs pairs), and `diagnosticLogs`
+(redacted operational messages). No evidence, decisions, errors affecting status,
+citations or measured SDK behavior may be moved there to avoid hashing.
+Citation `retrievedAt`, source applicability, captured SDK timestamps/durations,
+event order, retry timing and clock policies remain semantic; never drop a field
+by its name/type or by recursive timestamp removal. Normalization does not remove
+raw capture hashes from the digest. Evidence IDs and run-level gap references are
+stable across equivalent runs; a run-scoped `scopeRef` uses `{kind: "run"}`, not runId.
+Relocating host roots changes only operational metadata; changing any evidence
+record changes the projection. Referenced artifact hashes bind their bytes; a
+reader verifies them rather than treating an unchanged recorded hash as proof.
 No cross-run merging of observations unless a future contract defines comparability.
 User-owned retention and deletion are described in [operations](operations.md).
 

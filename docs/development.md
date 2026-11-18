@@ -37,11 +37,22 @@ authorized on 2026-11-18, supersedes the earlier personal-click-only rule.
 Use the scoped App helper's guarded merge command after approval:
 
 ```sh
-python3 /Volumes/AIWorkspace/portfolio/tools/agent-auth.py shiftproof gh pr merge NUMBER --squash
+python3 /Volumes/AIWorkspace/portfolio/tools/agent-auth.py shiftproof gh pr merge NUMBER --squash --message-file SNAPSHOT.json --message-sha256 REVIEWED_SHA256
 ```
 
-Replace `NUMBER` with the approved PR number. The helper verifies an actual
-current-head owner approval and pins the merge head; it is an operator guard,
+Before approval, freeze a UTF-8 JSON object containing exactly `repository`
+(`Himanshu-singh04/shiftproof`), integer `number`, `head`, `title`, and `body`.
+Validate the snapshot title/body against the full commit list with the PR-policy
+validator and inspect final Git trailers. Record the exact message and file SHA-256
+in the approval briefing; retain the file on the pendrive outside the checkout.
+Replace the placeholders with that approved PR, file, and recorded digest; do not
+recompute the approved digest from an edited file. A changed message requires a
+new briefing and explicit approval even when the head is unchanged.
+
+The helper verifies the snapshot digest, repository/PR/head binding and actual
+current-head owner approval. It reads the message once and supplies explicit
+`--subject`/`--body`, alongside `--match-head-commit`, so later PR-body edits cannot
+change the squash message. Bare `--squash` is rejected. This is an operator guard,
 not a GitHub-wide permissions boundary. Record approval ID, merge SHA,
 attribution, and main CI in the PR timeline. Preserve prior review comments.
 
@@ -60,7 +71,7 @@ model account. A different model uses its own truthful display name and the same
 portfolio bot email. List multiple agents when each actually contributed.
 Copy every co-author trailer into a final plain-text trailer block in the PR body,
 separated from the preceding prose by a blank line. Keep this block after any
-automated summaries. Squash defaults use the PR title and body. The validator
+automated summaries. GitHub's mutable squash defaults must not be relied on. The validator
 uses `git interpret-trailers --parse`, so a co-author line in the middle of prose
 does not count. Inspect the exact final squash message immediately before merge
 and verify the resulting commit; body edits after CI can invalidate attribution.

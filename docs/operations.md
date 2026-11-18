@@ -15,7 +15,7 @@ All product installation, execution and recovery steps below describe future wor
 | Models and caches | Directories exist, but model/cache routing is not configured; no model selected or benchmarked |
 | Persistent project server/workers | Not provisioned; this planning work uses temporary specialists, not persistent workers |
 | GitHub | Remote copies of pushed source/docs and CI/review records; unpushed local changes are not remotely backed up |
-| Runtime evidence | Proposed user-selected local directory outside Git; path, retention and capacity must be explicit |
+| Runtime evidence | Proposed user-selected local directory outside Git; artifacts/local citations are run-bundle-relative; host roots are operational metadata, with explicit retention and capacity |
 
 Do not call the pendrive “all memory”: it stores files, while compute, current
 history and credentials remain on the Mac. Future per-project history, model
@@ -34,8 +34,12 @@ new session service exists merely because a directory was created.
    Integrity checks detect mismatch; they do not establish publisher authenticity.
 4. Choose read-only source/lockfile snapshots, reviewed fixtures and a writable
    evidence directory outside Git. Check free space, path containment and mount identity.
+   Hold verified directory/mount handles for publication; a preflight pathname check
+   alone is insufficient. All creation, writes, renames and completion publication
+   must remain bound to those identities, including across mount removal/replacement.
 5. Preflight adapter support, exact installed identities, scope and isolation.
-   If replay enforcement is unavailable, allow only discovery and an unknown report.
+   If replay enforcement is unavailable, allow only discovery and an unknown report
+   when publication safety is independently available.
 6. Run offline with filtered environment and no production credentials; inspect
    status, coverage, gaps and completion manifest before using the report.
 
@@ -44,6 +48,12 @@ Proposed command surface, **not available**:
 The JSON manifest carries source root, source/target locks, pair, adapter, fixture
 bundle and frozen scope; it does not carry credentials or executable hooks.
 Unknown fields and unsafe paths fail validation. No shell strings are accepted.
+Manifest path inputs resolve relative to the manifest directory unless absolute;
+`--output` resolves relative to the invocation directory unless absolute. Validate
+each against its designated source/provisioning/output base. Persist source paths
+relative to the source snapshot and artifact/local citation paths relative to the
+run bundle, with containment enforced separately. Never interpret stored references
+relative to the current working directory or persist host roots as report links.
 Proposed exit codes: `0` complete compatible-within-tested-scope; `1` complete
 incompatible; `2` complete unknown; `3` invalid input or failed/incomplete execution.
 An incomplete run exits `3` even if its report retains a validated incompatibility.
@@ -57,6 +67,16 @@ must not fetch missing dependencies or call a remote API. No paid fallback exist
 Child processes separate SDK module state but are not a security sandbox. B03 must
 choose and test enforceable network denial, filesystem confinement, descendant
 cleanup and resource limits. Unsupported platforms stay discovery-only.
+
+Publication feasibility is a separate ADR-04/B09 platform gate: demonstrate that
+the chosen Node/runtime APIs or an explicitly reviewed platform mechanism bind
+directory operations and the final marker to verified handles/mount identity.
+Do not assume Node can enforce this. If identity is lost or binding cannot be
+guaranteed, stop publication with exit 3, retain no completion marker, and report
+the failure through stderr. Never recreate a missing mount directory, reopen its
+pathname as a substitute, or fall back to the Mac's underlying directory. Polling
+mount identity before ordinary pathname writes is not sufficient. No platform
+ships report publication until this gate passes; no mechanism is selected yet.
 
 Proposed limits are in [testing](testing.md); they are unmeasured. Logs contain
 run ID, stage, duration, input hashes, counts, reason codes and redacted diagnostics.
@@ -72,7 +92,7 @@ so an operator can distinguish a stopped worker from a completed unknown result.
 | Wrong/missing lock or artifact | Stop preflight; correct explicit identity and start a new run; never resolve latest silently |
 | Network attempted in offline mode | Block it; emit isolation/adapter gap; review fixture seam before rerun |
 | Timeout/crash/nondeterminism | Preserve redacted diagnostic/attempt evidence; mark unknown; reset both environments and rerun with a new ID |
-| Disk full or pendrive removed | Stop writing; do not publish completion manifest; reconnect/check mount and free space before new run |
+| Disk full, pendrive removed or mount identity changed | Fail handle-bound publication; suppress completion manifest; no pathname fallback/recreation; reconnect and verify a fresh mount/output handle before a new run |
 | Interrupted process | Terminate descendants; mark leftover run partial; inspect then delete only its owned scratch directory |
 | Corrupt/missing report artifacts | Reader rejects digest/reference mismatch; regenerate from pinned inputs, never repair status manually |
 | Model absent or overloaded later | Skip explanation with reason; preserve deterministic report; no paid or network substitute |

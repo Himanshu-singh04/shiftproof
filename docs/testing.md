@@ -24,13 +24,13 @@ Test IDs are planned suites, not commands that currently exist.
 | T02 | SP-02 | Direct call, import alias, supported wrapper; computed property, runtime import, escaped SDK object, unresolved module, parse failure, excluded file; explicit coverage/gaps and no execution |
 | T03 | SP-03 | Capability supported/partial/unsupported; empty required set rejected; unresolved argument mapping; missing call/scenario/citation links; reject dangling IDs, duplicate/missing outcome or obligation records, wrong-side observations and invalid reason/gap cardinality |
 | T04 | SP-04 | Same immutable fixture on both versions; equal control, known semantic change, expected SDK error, harness crash, failed source assertion; only comparable outcomes establish difference |
-| T05 | SP-05 | Exhaustive aggregate precedence: different plus unknown => incompatible; equal plus unknown => unknown; all complete/equal => compatible-within-tested-scope; zero calls/scenarios => unknown; compile-only => unknown |
-| T06 | SP-06 | Exact vs uncertain doc versions, stale snapshot hash, absent citation, broken reference, raw claim without observation; report evidence chain and missing requirements |
+| T05 | SP-05 | Obligation precedence: validated mapping fail plus unknown => incompatible; pass plus unknown => unknown; all complete/pass => compatible-within-tested-scope; different fixture with unsupported capability or unrepresentative arguments => unknown mapping, not incompatible; zero calls/scenarios and compile-only => unknown |
+| T06 | SP-06 | Exact vs uncertain doc versions, stale snapshot hash, absent/unsafe citation, broken reference, raw claim without observation; reject extra/missing closure IDs and individually valid cross-case callsite/scenario/observation/citation/gap references |
 | T07 | SP-07 | Object-key canonicalization; array reorder, undefined/null/omitted, numeric/string, error code, retry count and pagination boundary differences remain visible; invalid rule fails closed |
-| T08 | SP-08 | Golden JSON/Markdown parity using persisted outcomes/obligations without renderer recomputation; escaped hostile text; interrupted write, full disk, missing completion manifest, invalid schema; no partial report presented complete |
-| T09 | SP-09 | Top-level customer-code execution sentinel never fires; forbidden path/symlink/write/network/subprocess attempts blocked; limits applied; unavailable enforcement => replay unknown |
+| T08 | SP-08 | JSON/Markdown parity without renderer recomputation; inert hostile text/links; interrupted write/full disk; mount removal or replacement between preflight and write/rename/marker => no underlying-directory writes or completion marker; invalid schema rejected |
+| T09 | SP-09 | Customer-code sentinel never fires; forbidden path/symlink/write/network/subprocess blocked; source paths resolve only under snapshot, artifact/local citations only under bundle, even with different cwd; unavailable enforcement => replay unknown |
 | T10 | SP-10 | Secret sentinels absent from reports/logs/hashes of published payloads; redaction removes needed comparison value => unknown; hashes never labeled authenticated |
-| T11 | SP-11 | Three repeated runs; clock/seed/reset isolation; state leaking between sides; flaky retry observations; cancellation kills descendants; orphan cleanup; semantic digest stable when only metadata varies |
+| T11 | SP-11 | Three repeated runs; clock/seed/reset isolation; state leaks/flaky attempts; descendant cleanup; digest stable only for named operational exceptions, sensitive to citations/callsites/capabilities/findings/coverage and captured SDK timestamps |
 | T12 | SP-12 | Later eval: missing evidence abstention, unsupported causal claim, prompt injection, wrong version citation, model unavailable, budget exhaustion; deterministic status immutable and no fallback calls |
 | T13 | SP-13 | Later inert diff references current file hashes; stale proposal rejected for review; no apply/merge/write tools; unsupported transformation shown as deferred |
 
@@ -54,11 +54,28 @@ not apply to normalization rule sequences, fixture steps or observed event/paylo
 arrays. Reordering overlapping normalization rules must change the scenario digest;
 use a counterexample where it also changes comparison results to detect accidental sorting.
 Further invariants:
-adding a blocking gap cannot turn unknown into compatible; a valid difference
-dominates unknowns; excluded supplemental scenarios cannot change scoped status;
+adding a blocking gap cannot turn unknown into compatible; a validated fail mapping
+dominates unknowns, but a raw different scenario with only unknown mappings cannot;
+excluded supplemental scenarios cannot change scoped status;
 normalization is repeatable; output IDs resolve; absent observations never pass.
 Use mutation tests selectively to demonstrate that removing a required scenario
 or swallowing a capture error is detected. Test framework choice follows ADR-01.
+
+Link-policy cases include valid HTTPS and contained run-relative files, plus
+javascript/data/file/HTTP schemes, protocol-relative targets, credentials in URLs,
+controls, backslashes, encoded/nested traversal and separator escapes. Rejected
+targets never render as hrefs/autolinks; embedded source HTML/Markdown stays inert.
+Use two callsites sharing one scenario with one fail and one unknown mapping:
+only the valid fail callsite may receive an incompatible finding. Substitute an
+unrelated existing observation/citation/gap ID and require closure rejection.
+Digest mutation cases change each semantic collection, citation retrieval metadata,
+and a captured SDK timestamp; each changes the digest. Vary only contract-listed
+operational metadata as a control. Moving a bundle preserves contained references
+and digest while source lookups still require the explicit snapshot base.
+Publication regression cases remove/replace the mount after preflight and during
+each publication stage, including immediately before marker publication. Assert
+no pathname fallback/recreation, no writes under the old mount's underlying host
+directory, and no completion marker; inability to enforce this blocks the platform.
 
 ## Reproducibility, performance and isolation
 

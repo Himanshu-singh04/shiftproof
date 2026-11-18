@@ -110,13 +110,18 @@ graph LR
 | Maintainer → CLI | Proposed `analyze` invocation with JSON manifest / exit code and report path | Local OS user; no web auth; reject malformed manifest/path escapes |
 | Files → Inventory/Discovery | Source root, two lock snapshots, workspace/resolution path / identity and call records | Read-only, no config/module execution; unreadable/ambiguous inputs create gaps |
 | Reviewed bundle → Replay | Pinned artifacts, fixture/scenario descriptor / two observation records | Product-owned harness only; hash/identity mismatch or absent isolation blocks replay |
-| Report → directory | Validated RunRecord / `report.json`, `report.md`, referenced artifacts, completion manifest | New owned directory; no overwrite; write failure leaves partial run |
+| Report → directory | Validated RunRecord / `report.json`, `report.md`, referenced artifacts, completion manifest | Verified directory/mount handles; no overwrite/path fallback; identity loss suppresses completion |
 
 Proposed manifest fields: `schemaVersion`, `sourceRoot`, `sourceLockPath`,
 `targetLockPath`, `workspace`, `resolutionPath`, `packageName`, `sourceVersion`,
 `targetVersion`, `adapterId`, `fixtureBundlePath`, `scope`, and `limits`.
 All fields are required except optional workspace/resolution disambiguators when
 the pair is uniquely resolved. Paths are local; no URLs, commands, hooks or credentials.
+Operator manifest paths resolve from the manifest directory unless absolute; CLI
+output paths resolve from the invocation directory unless absolute. These inputs
+are distinct from stored repository-relative source paths and run-bundle-relative
+artifact/local citation paths. Host roots remain operational metadata, with separate
+containment checks for each base; stored references never use the current directory.
 Scope/limits use closed validated structures from the evidence contract and ADR-03.
 Exit mapping and unavailable command warning are specified in [operations](../../operations.md).
 
@@ -212,6 +217,9 @@ N/A for database migrations. Propose immutable per-run local files with a comple
 manifest published last. No SQL store, queue or shared cache is necessary for MVP.
 Redacted raw captures and normalized views are separate referenced artifacts.
 Readers verify references/hashes and reject partial bundles; hashes are not signatures.
+Publication must remain bound to verified directory/mount handles, not a preflight
+pathname check. ADR-04/B09 must prove this on the proposed runtime/platform before
+publication is supported; identity loss forbids fallback/recreation or a final marker.
 
 #### Internal API Changes
 
@@ -227,7 +235,7 @@ All paths/records are validated at ingress; records remain schema-bound througho
 | Adapter.prepare | Scenario, side identity → reviewed execution descriptor | Unequal semantics: unknown, no arbitrary executable hook |
 | Replay.run | Descriptor, enforced limits → Observation | Timeout/crash/blocked separately captured |
 | Comparison.evaluate | Validated evidence → persisted scenarioOutcomes, obligations, findings, coverage, status | Invalid references/prerequisites: unknown diagnostic |
-| Report.write | Validated RunRecord, new output path → artifact manifest | IO failure: no completion marker, exit 3 |
+| Report.write | Validated RunRecord, verified output directory/mount handle → artifact manifest | IO/identity loss or unavailable binding: no completion marker, exit 3 |
 
 #### Application Data Models
 
@@ -235,8 +243,9 @@ RunRecord owns Identity and frozen Scope; Callsite references Capability and Sce
 Scenario references Citation and NormalizationRule; Observation references Scenario
 and side; ScenarioOutcome references Scenario and its observations; Obligation
 references a call/outcome mapping or blocking gap; Finding references these persisted
-results and their supporting records. Comparison owns their derivation; Report
-only renders validated records. Coverage derives from
+results and their exact case-specific reference closure. Cross-case references are
+invalid even when IDs exist. Comparison owns derivation; Report validates closure
+and safe link targets before rendering persisted values. Coverage derives from
 these relationships, not an independently editable score. Full fields, enums and
 validation behavior are in the evidence contract; avoid a second conflicting schema.
 
@@ -258,15 +267,17 @@ Deterministic aggregate after full structural validation:
 
 ```text
 if invalidRecord: return unknown diagnostic
-if any required in-scope scenario is different: return incompatible
+if any validated in-scope mapping obligation has state fail: return incompatible
 if state != complete: return unknown
 if resolvedCalls == 0 or requiredScenarios == 0: return unknown
 if any obligation unknown or any blocking run gap: return unknown
 return compatible-within-tested-scope
 ```
 
-Only comparable observations can produce different; see the prerequisite order
-in the evidence contract. Supplemental unmapped scenarios do not change status.
+Only comparable observations can produce different; only supported, representative
+call mappings with complete prerequisites can turn that outcome into a fail obligation.
+A different scenario with only unknown mappings stays supplemental and cannot
+establish scoped incompatibility. Unmapped scenarios also do not change status.
 
 #### Example: [Integration Pattern Name]
 
@@ -285,9 +296,10 @@ filesystem/network access. No arbitrary customer imports or lifecycle scripts ru
 
 #### Test Examples as Interface Documentation
 
-Planned T05 table: `[equivalent, unknown] → unknown`, `[different, unknown] → incompatible`,
-`[] → unknown`, all equivalent plus unresolved call → unknown, and all equivalent
-with complete obligations → compatible-within-tested-scope. Planned T04 verifies a
+Planned T05 obligation table: `[pass, unknown] → unknown`, `[fail, unknown] → incompatible`,
+`[] → unknown`, all pass plus unresolved call → unknown, and all pass with a complete
+nonempty scope → compatible-within-tested-scope. A different fixture with unsupported
+capability/unrepresentative arguments yields unknown, not fail. Planned T04 verifies a
 source baseline assertion failure makes a raw unequal result unknown, not different.
 
 ## Runtime View
@@ -301,7 +313,7 @@ source baseline assertion failure makes a raw unequal result unknown, not differ
 3. Discovery scans without importing code; missing mappings become obligations/gaps.
 4. Replay runs each frozen scenario for source and target with enforced isolation.
 5. Comparison validates, normalizes, classifies and aggregates deterministically.
-6. Report writes JSON/Markdown, artifacts and completion manifest; CLI returns exit.
+6. Report publishes via verified output handles, completion manifest last; CLI returns exit.
 
 ```mermaid
 sequenceDiagram
@@ -315,27 +327,31 @@ sequenceDiagram
     CLI->>Discovery: scan(snapshot, scope, capabilities)
     CLI->>Replay: run(scenarios, pinned identities)
     CLI->>Comparison: evaluate(validated evidence)
-    CLI->>Report: write(RunRecord, output)
+    CLI->>Report: write(RunRecord, verified output handles)
     Report-->>CLI: completion manifest or IO failure
 ```
 
 ### Error Handling
 
 Invalid manifest/path/schema → diagnostic unknown, exit 3. Unresolved pair or
-unsupported capability → blocked evidence, unknown unless a separate valid
-difference exists. Parser/read errors → file/call gaps. Expected SDK exceptions
+unsupported capability → blocked evidence, unknown unless a separate validated
+fail mapping exists. Parser/read errors → file/call gaps. Expected SDK exceptions
 are scenario observations; crashes/timeouts are execution failures. Network attempts
 are denied; no transparent retry or fallback. Redaction/truncation/citation loss →
 unknown for affected comparisons. IO/cancellation leaves partial artifacts and
 exit 3, retaining any already validated incompatibility with incomplete-run labeling.
+Output identity loss suppresses completion with no pathname fallback/recreation;
+if safe handle binding is unavailable, publication fails closed.
 
 ### Complex Logic (if applicable)
 
 Freeze call-to-scenario obligations before results are known. Unknown static
 coverage cannot be repaired by unrelated passing fixtures. Scope exclusions are
 displayed separately from unexpected gaps. Preserve failed attempts; conflicting
-replays are nondeterministic/unknown, not majority-voted. Semantic digests exclude
-volatile metadata as defined in the evidence contract, not arbitrary changed fields.
+replays are nondeterministic/unknown, not majority-voted. The digest covers the whole
+semantic RunRecord except the contract's named operational locations; citations,
+coverage, findings and captured SDK timestamps remain covered. No recursive dropping
+of timestamps, durations or other behavior-bearing fields is permitted.
 
 ## Deployment View
 
@@ -368,7 +384,9 @@ execution. These define proposed product patterns and existing delivery practice
 CLI + local Markdown, no web design system. Present status and tested scope first,
 then exact pair, coverage/gaps, changed scenarios, citations and next actions.
 Use text labels rather than color-only signals. Escape untrusted source/doc content,
-use readable tables and stable links. Progress is stage-based and cancellable.
+use readable tables and stable links. Only validated HTTPS or contained run-relative
+citation targets become links; source HTML/Markdown/hrefs remain inert text, with no
+remote auto-load. Progress is stage-based and cancellable.
 
 #### UI Visualization Guide
 
@@ -406,7 +424,7 @@ All user confirmations are **pending**; no decision below is an approved archite
 | ADR-01 | TypeScript/Node modular CLI; fits source-language analysis and local operation | Exact runtime, parser, package manager and lockfile format unresolved; B02 clean install/identity tests |
 | ADR-02 | One package and exact pair, UNSELECTED; reproducible narrow evidence first | Limited market coverage; B01 candidate matrix, known change/equal control and primary docs |
 | ADR-03 | Reviewed adapter-only replay with enforced network/filesystem/process limits | Platform complexity; B03 prove enforcement or disable replay; child process alone insufficient |
-| ADR-04 | Versioned local JSON as source of truth, Markdown projection, no database | File retention and schema evolution burden; B04/B09 validate references and atomicity |
+| ADR-04 | Versioned local JSON, Markdown projection, no database; handle-bound publication | B04/B09 validate closure, links, digest and mount-loss behavior; Node/platform feasibility unresolved; block publication if binding cannot be enforced |
 | ADR-05 | Defer local/customer-owned LLM/RAG explanation until deterministic MVP | Less flexible prose initially; B12 model/license/resource/grounding eval and no paid fallback |
 | ADR-06 | Defer trusted customer harness and inert patch proposals; no transformations | Cannot exercise arbitrary application flows; B13 explicit trust and review contract required |
 
@@ -432,12 +450,14 @@ All user confirmations are **pending**; no decision below is an approved archite
 - SP-04/T04: WHEN replay is permitted, THE SYSTEM SHALL use the same immutable
   scenario on both versions and distinguish SDK behavior from harness failure.
 - SP-05/T05: THE SYSTEM SHALL apply the contract's exact status precedence and
-  SHALL NOT use compilation as a behavioral success observation.
+  SHALL require a validated fail mapping for scoped incompatibility; compilation
+  SHALL NOT supply behavioral success.
 - SP-06/T06: WHEN required citations are missing, THE SYSTEM SHALL expose the gap
   and withhold claims dependent on those citations.
 - SP-07/T07: THE SYSTEM SHALL retain normalization provenance and material differences.
 - SP-08/T08: WHEN publishing a complete report, THE SYSTEM SHALL derive Markdown
-  from validated JSON and publish a completion manifest last.
+  from validated JSON and publish a completion manifest last through verified output
+  handles; IF mount/directory identity is lost, THE SYSTEM SHALL suppress completion.
 - SP-09/T09: WHILE analyzing source, THE SYSTEM SHALL NOT import customer code;
   IF isolation is unavailable, THEN THE SYSTEM SHALL block replay.
 - SP-10/T10: IF redaction removes required evidence, THEN THE SYSTEM SHALL mark
@@ -479,7 +499,7 @@ redirect writes to a newly created local path. Partial report files are not comp
 | Term | Definition | Context |
 | --- | --- | --- |
 | Tested scope | Frozen subset of calls, capabilities, scenarios and dimensions | Bounds every compatibility statement |
-| Semantic difference | Comparable observations differ in a material declared dimension | Incompatible within fixture scope, not automatically a defect |
+| Semantic difference | Comparable observations differ in a material declared dimension | Scoped incompatibility additionally requires a validated fail mapping; not automatically a defect |
 | Capability gap | Required behavior lacks sufficient support or evidence | Produces unknown obligation |
 
 ### Technical Terms
@@ -487,7 +507,7 @@ redirect writes to a newly created local path. Partial report files are not comp
 | Term | Definition | Context |
 | --- | --- | --- |
 | Pair | Exact source/target versions plus resolution/artifact identity | One per run |
-| Semantic digest | Hash of stable evidence projection excluding volatile metadata | Reproducibility, not authenticity |
+| Semantic digest | Hash of whole semantic RunRecord minus named operational exceptions | Reproducibility, not authenticity |
 | Isolation | Enforced execution boundaries beyond a process boundary | Required for replay |
 
 ### API/Interface Terms
