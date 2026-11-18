@@ -18,8 +18,32 @@ python3 /Volumes/AIWorkspace/portfolio/tools/agent-auth.py shiftproof gh pr crea
 The helper creates a token scoped to one repository, passes it through process
 environment, and revokes it when the command finishes. Never print tokens or put
 them in remote URLs. The owner-only App key lives on the Mac outside the projects.
-Human `gh` authentication is reserved for repository administration; approvals
-must be submitted by the human reviewer, not an agent using that login.
+Human `gh` authentication is used for authorized repository administration and
+explicitly delegated approval submissions. The founder reviews the linked PR
+and coordinator briefing, then approves the identified revision in coordinator
+chat. Only after that decision may the coordinator submit an `APPROVE` review
+through the founder's existing account, using the review API's explicit
+`commit_id`. The review must quote or faithfully record the authorization, link
+the briefing, name the founder as decision-maker, and disclose submission by
+the coordinator on their behalf. Workers cannot submit approvals.
+
+Verify the recorded review's owner, state, and commit. Recheck required CI,
+unresolved threads, current head, and final squash trailers immediately before
+merge. A changed head requires renewed review and explicit approval; general
+workflow consent never approves a future PR. Do not duplicate an existing valid
+owner approval or treat a bot review as the founder's decision. This protocol,
+authorized on 2026-11-18, supersedes the earlier personal-click-only rule.
+
+Use the scoped App helper's guarded merge command after approval:
+
+```sh
+python3 /Volumes/AIWorkspace/portfolio/tools/agent-auth.py shiftproof gh pr merge NUMBER --squash
+```
+
+Replace `NUMBER` with the approved PR number. The helper verifies an actual
+current-head owner approval and pins the merge head; it is an operator guard,
+not a GitHub-wide permissions boundary. Record approval ID, merge SHA,
+attribution, and main CI in the PR timeline. Preserve prior review comments.
 
 ## Attribution
 
