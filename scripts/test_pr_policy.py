@@ -2,13 +2,14 @@ from copy import deepcopy
 from pathlib import Path
 import unittest
 
-from check_pr import APP_LOGIN, BOT_EMAIL, BOT_USER_ID, LEGACY_BOT_EMAIL, SECTIONS, validate
+from check_pr import SECTIONS, validate
 
 
 class PRPolicyTests(unittest.TestCase):
     def setUp(self):
-        self.trailer = f"Co-authored-by: GPT-6 Astra (OpenCode) <{BOT_EMAIL}>"
-        self.pr = {"title": "chore: establish foundation", "commits": 1, "user": {"login": APP_LOGIN, "id": BOT_USER_ID},
+        self.trailer = "Co-authored-by: GPT-6 Astra (OpenCode) <358166722+code-daddy04[bot]@users.noreply.github.com>"
+        self.pr = {"title": "chore: establish foundation", "commits": 1,
+                   "user": {"login": "code-daddy04[bot]", "id": 358166722},
                    "body": "\n\n".join(f"## {section}\nRecorded evidence." for section in SECTIONS)
                    + "\nAI-Assisted: yes\nCoding-Agent: GPT-6 Astra / OpenCode\n\n" + self.trailer}
         self.commits = [{"sha": "abc123", "commit": {"message": "chore: foundation\n\n" + self.trailer}}]
@@ -24,7 +25,8 @@ class PRPolicyTests(unittest.TestCase):
                 self.assertTrue(any("disclose" in e for e in validate(self.pr, self.commits)))
 
     def test_historical_and_mixed_trailers_survive_squash(self):
-        old = self.trailer.replace(BOT_EMAIL, LEGACY_BOT_EMAIL)
+        old = "Co-authored-by: GPT-6 Astra (OpenCode) <358166722+himanshu-portfolio-agent[bot]@users.noreply.github.com>"
+        self.assertNotEqual(old, self.trailer)
         self.pr["body"] = self.pr["body"].replace(self.trailer, old)
         self.commits[0]["commit"]["message"] = "chore: historic work\n\n" + old
         self.assertEqual(validate(self.pr, self.commits), [])
@@ -36,7 +38,7 @@ class PRPolicyTests(unittest.TestCase):
         self.assertTrue(any("abc123" in e for e in validate(self.pr, self.commits)))
 
     def test_unregistered_bot_email_does_not_count(self):
-        other = self.trailer.replace(BOT_EMAIL, "358166722+unregistered[bot]@users.noreply.github.com")
+        other = "Co-authored-by: GPT-6 Astra (OpenCode) <358166722+unregistered[bot]@users.noreply.github.com>"
         self.pr["body"] = self.pr["body"].replace(self.trailer, other)
         self.commits[0]["commit"]["message"] = "chore: wrong alias\n\n" + other
         self.assertTrue(any("owned bot" in e for e in validate(self.pr, self.commits)))
