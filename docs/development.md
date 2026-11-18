@@ -3,7 +3,7 @@
 ## Ownership and authentication
 
 `Himanshu-singh04` is the human reviewer and code owner. The private GitHub App
-`himanshu-portfolio-agent` (App ID `5812624`, installation `183214958`) authors
+`code-daddy04` (App ID `5812624`, installation `183214958`) authors
 agent PRs. It is installed only on ReleaseLens, ShiftProof, and HookTrace.
 It can write contents, issues, PRs, and workflows, and read Actions and checks.
 The App has no rule bypass. Actions tokens are read-only by default.
@@ -60,13 +60,22 @@ attribution, and main CI in the PR timeline. Preserve prior review comments.
 
 Git commit authorship and authenticated PR authorship are distinct. Preserve
 the human's configured Git identity and credit the actual contributing agent.
-For the foundation work, use:
+For new work after the App rename, use:
 
 ```text
-Co-authored-by: GPT-6 Astra (OpenCode) <358166722+himanshu-portfolio-agent[bot]@users.noreply.github.com>
+Co-authored-by: GPT-6 Astra (OpenCode) <358166722+code-daddy04[bot]@users.noreply.github.com>
 ```
 
-This is our owned bot's verified GitHub email, not an OpenAI email or separate
+The App was renamed from `himanshu-portfolio-agent` to `code-daddy04` on 2026-11-18;
+its bot user ID remains `358166722`. The checker identifies App-authored PRs by
+that stable ID in GitHub REST metadata, not the mutable login. Missing/invalid
+author IDs fail validation. The only accepted bot emails are the current address
+above and historical `358166722+himanshu-portfolio-agent[bot]@users.noreply.github.com`.
+Keep historic commit trailers and frozen reviewed snapshots intact. Mixed-history
+PR bodies/squash messages must retain both exact trailers when both occur in commits;
+one alias does not substitute for another. New names/aliases require verification.
+
+This is our owned bot's GitHub noreply address, not an OpenAI email or separate
 model account. A different model uses its own truthful display name and the same
 portfolio bot email. List multiple agents when each actually contributed.
 Copy every co-author trailer into a final plain-text trailer block in the PR body,

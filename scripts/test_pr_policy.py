@@ -2,19 +2,55 @@ from copy import deepcopy
 from pathlib import Path
 import unittest
 
-from check_pr import APP_LOGIN, BOT_EMAIL, SECTIONS, validate
+from check_pr import SECTIONS, validate
 
 
 class PRPolicyTests(unittest.TestCase):
     def setUp(self):
-        self.trailer = f"Co-authored-by: GPT-6 Astra (OpenCode) <{BOT_EMAIL}>"
-        self.pr = {"title": "chore: establish foundation", "commits": 1, "user": {"login": APP_LOGIN},
+        self.trailer = "Co-authored-by: GPT-6 Astra (OpenCode) <358166722+code-daddy04[bot]@users.noreply.github.com>"
+        self.pr = {"title": "chore: establish foundation", "commits": 1,
+                   "user": {"login": "code-daddy04[bot]", "id": 358166722},
                    "body": "\n\n".join(f"## {section}\nRecorded evidence." for section in SECTIONS)
                    + "\nAI-Assisted: yes\nCoding-Agent: GPT-6 Astra / OpenCode\n\n" + self.trailer}
         self.commits = [{"sha": "abc123", "commit": {"message": "chore: foundation\n\n" + self.trailer}}]
 
     def test_assisted_record_passes(self):
         self.assertEqual(validate(self.pr, self.commits), [])
+
+    def test_renamed_bot_cannot_evade_disclosure(self):
+        self.pr["body"] = self.pr["body"].replace("AI-Assisted: yes", "AI-Assisted: no")
+        for login in ("himanshu-portfolio-agent[bot]", "code-daddy04[bot]", "future-name[bot]"):
+            with self.subTest(login=login):
+                self.pr["user"]["login"] = login
+                self.assertTrue(any("disclose" in e for e in validate(self.pr, self.commits)))
+
+    def test_historical_and_mixed_trailers_survive_squash(self):
+        old = "Co-authored-by: GPT-6 Astra (OpenCode) <358166722+himanshu-portfolio-agent[bot]@users.noreply.github.com>"
+        self.assertNotEqual(old, self.trailer)
+        self.pr["body"] = self.pr["body"].replace(self.trailer, old)
+        self.commits[0]["commit"]["message"] = "chore: historic work\n\n" + old
+        self.assertEqual(validate(self.pr, self.commits), [])
+        self.pr["commits"] = 2
+        self.commits.append({"sha": "def456", "commit": {"message": "fix: renamed bot\n\n" + self.trailer}})
+        self.pr["body"] += "\n" + self.trailer
+        self.assertEqual(validate(self.pr, self.commits), [])
+        self.pr["body"] = self.pr["body"].replace(old + "\n", "")
+        self.assertTrue(any("abc123" in e for e in validate(self.pr, self.commits)))
+
+    def test_unregistered_bot_email_does_not_count(self):
+        other = "Co-authored-by: GPT-6 Astra (OpenCode) <358166722+unregistered[bot]@users.noreply.github.com>"
+        self.pr["body"] = self.pr["body"].replace(self.trailer, other)
+        self.commits[0]["commit"]["message"] = "chore: wrong alias\n\n" + other
+        self.assertTrue(any("owned bot" in e for e in validate(self.pr, self.commits)))
+        self.assertTrue(any("abc123" in e for e in validate(self.pr, self.commits)))
+
+    def test_missing_or_invalid_author_identity_fails_closed(self):
+        for value in (None, "358166722", True, 0, -1):
+            with self.subTest(id=value):
+                self.pr["user"]["id"] = value
+                self.assertTrue(any("author ID" in e for e in validate(self.pr, self.commits)))
+        self.pr.pop("user")
+        self.assertTrue(validate(self.pr, self.commits))
 
     def test_missing_verification_fails(self):
         self.pr["body"] = self.pr["body"].replace("## Verification\nRecorded evidence.", "## Verification\n")
@@ -33,7 +69,7 @@ class PRPolicyTests(unittest.TestCase):
         self.assertTrue(any("disclose" in e for e in validate(self.pr, self.commits)))
 
     def test_native_dependabot_preserves_own_attribution(self):
-        self.pr["user"]["login"] = "dependabot[bot]"
+        self.pr["user"] = {"login": "dependabot[bot]", "id": 49699333}
         self.pr["body"] = "Bumps actions/checkout; upstream release notes."
         self.commits[0]["author"] = {"login": "dependabot[bot]"}
         self.commits[0]["committer"] = {"login": "dependabot[bot]"}
@@ -41,18 +77,18 @@ class PRPolicyTests(unittest.TestCase):
         self.assertEqual(validate(self.pr, self.commits), [])
 
     def test_modified_dependabot_needs_full_record(self):
-        self.pr["user"]["login"] = "dependabot[bot]"
+        self.pr["user"] = {"login": "dependabot[bot]", "id": 49699333}
         self.pr["body"] = "Bumps actions/checkout; upstream release notes."
         self.assertTrue(validate(self.pr, self.commits))
 
     def test_unassisted_human_contribution(self):
-        self.pr["user"]["login"] = "contributor"
+        self.pr["user"] = {"login": "contributor", "id": 1234}
         self.pr["body"] = self.pr["body"].replace("AI-Assisted: yes", "AI-Assisted: no").replace(self.trailer, "")
         self.commits[0]["commit"]["message"] = "chore: unassisted maintenance"
         self.assertEqual(validate(self.pr, self.commits), [])
 
     def native_dependency(self, committer="web-flow"):
-        self.pr["user"]["login"] = "dependabot[bot]"
+        self.pr["user"] = {"login": "dependabot[bot]", "id": 49699333}
         self.pr["title"] = "Bump actions/checkout from 6 to 7"
         self.pr["body"] = "Native dependency update with upstream release notes."
         self.commits[0].update(author={"login": "dependabot[bot]"}, committer={"login": committer})

@@ -4,8 +4,11 @@ import re
 import subprocess
 import sys
 
-APP_LOGIN = "himanshu-portfolio-agent[bot]"
-BOT_EMAIL = "358166722+himanshu-portfolio-agent[bot]@users.noreply.github.com"
+APP_LOGIN = "code-daddy04[bot]"
+BOT_USER_ID = 358166722
+BOT_EMAIL = "358166722+code-daddy04[bot]@users.noreply.github.com"
+LEGACY_BOT_EMAIL = "358166722+himanshu-portfolio-agent[bot]@users.noreply.github.com"
+BOT_EMAILS = (BOT_EMAIL, LEGACY_BOT_EMAIL)
 TRAILER = re.compile(r"^Co-authored-by: .+ <[^<>\s]+@[^<>\s]+>$", re.MULTILINE)
 SECTIONS = ("Task", "Changes", "Verification", "Documentation", "Agent attribution")
 PLACEHOLDERS = {
@@ -37,11 +40,14 @@ def native_dependabot(commit):
 
 
 def has_portfolio_agent(trailers):
-    return any(line.endswith(f"<{BOT_EMAIL}>") for line in trailers)
+    return any(line.endswith(f"<{email}>") for line in trailers for email in BOT_EMAILS)
 
 
 def validate(pr, commits):
     errors = []
+    author = pr.get("user") or {}
+    if type(author.get("id")) is not int or author["id"] <= 0:
+        return ["Missing valid PR author ID; fetch complete GitHub REST metadata."]
     # The REST PR commits endpoint caps results at 250 even with pagination.
     if not commits or pr.get("commits") != len(commits):
         return ["Incomplete PR commit list; fetch the full list or split the PR (REST limit: 250)."]
@@ -61,7 +67,7 @@ def validate(pr, commits):
     if not assisted or not agent or "replace with" in agent[1].lower():
         errors.append("Declare AI-Assisted: yes/no and the actual Coding-Agent (or none).")
     trailers = coauthors(pr["title"] + "\n\n" + body)
-    portfolio_pr = pr["user"]["login"] == APP_LOGIN
+    portfolio_pr = author["id"] == BOT_USER_ID
     if portfolio_pr:
         if not assisted or assisted[1] != "yes":
             errors.append("Portfolio App PRs must disclose AI assistance.")
