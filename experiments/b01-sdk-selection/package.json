@@ -1,0 +1,11 @@
+{
+  "name": "shiftproof-b01-sdk-selection",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Research-only offline SDK selection spike for issue #9",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "stripe-source": "npm:stripe@12.18.0",
+    "stripe-target": "npm:stripe@13.0.0"
+  }
+}
