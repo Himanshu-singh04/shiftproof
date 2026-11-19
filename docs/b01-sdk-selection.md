@@ -266,15 +266,15 @@ explicit in B02/B03/B04/B06 rather than inheriting this trusted harness as produ
 
 ## Recommendation and remaining gates
 
-Propose Stripe 12.18.0 → 13.0.0 for reproducible retry/error/return research. Its
+Stripe 12.18.0 → 13.0.0 is accepted for reproducible retry/error/return research. Its
 benefit is a directly documented semantic change with a small offline seam. Its
 cost is deliberately narrow and historical coverage; fixing API version excludes
 the concurrent remote API-version change, not evidence of compatibility with it.
 No package publication, pilot, paid service, product inference or production feature
 was undertaken. No third candidate is needed to justify this bounded recommendation.
 
-- Coordinator independently reruns and reviews A1–A6; founder approves the exact
-  reviewed revision and proposed pair separately. Supported pair stays UNSELECTED meanwhile.
+- Coordinator independent A1–A6 verification and founder approval completed in
+  PR #10. The pair is selected for research; shipped SDK support remains unimplemented.
 - B02/ADR-01: select supported Node/TypeScript/package manager and lockfile policy;
   measure clean installation and identity rejection rather than adopting this machine's runtime.
 - B03/ADR-03: enforce egress/filesystem/process limits, filtered environment,

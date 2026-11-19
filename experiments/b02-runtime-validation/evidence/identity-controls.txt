@@ -1,0 +1,30 @@
+$ python3 -B experiments/b02-runtime-validation/check.py --scratch /Volumes/AIWorkspace/caches/shiftproof/b02
+PASS: committed B01/B02 inputs and lock identities
+PASS: retained B01/B02 captures differ only in declared runtime fields
+PASS: mock npm positive dispatch
+PASS: mock compiler positive dispatch
+PASS: mock SDK positive dispatch
+PASS: wrong runtime executable hash; rejected before mocked tooling/SDK dispatch
+PASS: missing runtime executable; rejected before mocked tooling/SDK dispatch
+PASS: mock wrong runtime version; rejected before mocked tooling/SDK dispatch
+PASS: mock wrong runtime platform; rejected before mocked tooling/SDK dispatch
+PASS: mock wrong runtime arch; rejected before mocked tooling/SDK dispatch
+PASS: wrong npm version; rejected before mocked tooling/SDK dispatch
+PASS: missing wrong npm version; rejected before mocked tooling/SDK dispatch
+PASS: wrong compiler version; rejected before mocked tooling/SDK dispatch
+PASS: missing wrong compiler version; rejected before mocked tooling/SDK dispatch
+PASS: wrong native compiler version; rejected before mocked tooling/SDK dispatch
+PASS: missing wrong native compiler version; rejected before mocked tooling/SDK dispatch
+PASS: modified SDK identity; rejected before mocked tooling/SDK dispatch
+PASS: missing modified SDK identity; rejected before mocked tooling/SDK dispatch
+PASS: modified transitive identity; rejected before mocked tooling/SDK dispatch
+PASS: missing modified transitive identity; rejected before mocked tooling/SDK dispatch
+PASS: modified lock; rejected before mocked tooling/SDK dispatch
+PASS: missing modified lock; rejected before mocked tooling/SDK dispatch
+PASS: modified manifest; rejected before mocked tooling/SDK dispatch
+PASS: missing modified manifest; rejected before mocked tooling/SDK dispatch
+PASS: manifest/lock disagreement with refreshed manifest hash; rejected before mocked tooling/SDK dispatch
+PASS: documented boundary — arbitrary implementation edit not detected, code never executed
+PASS: changed semantic capture; rejected before mocked tooling/SDK dispatch
+PASS: portable controls complete; disposable mock directory removed
+exit: 0

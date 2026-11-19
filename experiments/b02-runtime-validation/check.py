@@ -24,6 +24,8 @@ def main():
     v.inputs_check(v.HERE, pins['inputs']['b02'])
     v.inputs_check(v.B01, pins['inputs']['b01'])
     print('PASS: committed B01/B02 inputs and lock identities')
+    v.compare(v.B01 / 'observations.ndjson', v.HERE / 'evidence/observations.ndjson')
+    print('PASS: retained B01/B02 captures differ only in declared runtime fields')
     # Disposable copies of real manifests/locks, synthetic installed package metadata.
     with tempfile.TemporaryDirectory(prefix='identity-controls-', dir=args.scratch) as directory:
         root = Path(directory)
@@ -73,6 +75,13 @@ def main():
             v.require(experiment.command.call_count == 0, f'tooling loaded after {label}')
             print(f'PASS: {label}; rejected before mocked tooling/SDK dispatch')
 
+        original_node = experiment.node
+        experiment.node = root / 'mock-node'
+        experiment.node.write_text('MOCK wrong executable bytes; never executed')
+        rejected('wrong runtime executable hash', lambda: v.Experiment.runtime(experiment), 'modified identity')
+        experiment.node.unlink()
+        rejected('missing runtime executable', lambda: v.Experiment.runtime(experiment), 'missing/linked identity')
+        experiment.node = original_node
         for field, wrong in [('version', 'v24.22.3'), ('platform', 'linux'), ('arch', 'x64')]:
             observed = {**v.RUNTIME, field: wrong}
             experiment.runtime = lambda: v.runtime_check(observed)
@@ -112,6 +121,12 @@ def main():
         sdk()
         v.require(experiment.command.call_count == 1, 'metadata-only trust boundary changed')
         print('PASS: documented boundary — arbitrary implementation edit not detected, code never executed')
+        changed = [json.loads(line) for line in (v.HERE / 'evidence/observations.ndjson').read_text().splitlines()]
+        changed[1]['observations'][0]['consumed'] = 999
+        path = root / 'changed-capture.ndjson'
+        path.write_text(''.join(json.dumps(row) + '\n' for row in changed))
+        rejected('changed semantic capture', lambda: v.compare(v.B01 / 'observations.ndjson', path),
+                 'B01 semantic/provenance difference')
     print('PASS: portable controls complete; disposable mock directory removed')
 
 

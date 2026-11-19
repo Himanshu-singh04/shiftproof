@@ -28,9 +28,10 @@ report publication remains B09 in M3, after M2's differential evidence pipeline.
 
 ## Initial bounded task: B01 SDK/version selection spike
 
-Budget: at most two working days and three candidate packages; no implementation
-commitment or customer credentials. The first package/source/target pair remains
-**UNSELECTED** until the coordinator and owner review the evidence.
+Original budget: at most two working days and three candidate packages; no implementation
+commitment or customer credentials. Completed in PR #10: Stripe 12.18.0 → 13.0.0
+was selected for research after coordinator and founder review. The criteria below
+describe that completed spike; they do not establish shipped product support.
 
 Entry: approved problem boundary and fixture licensing policy. Investigate:
 
