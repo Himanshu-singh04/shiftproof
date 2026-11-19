@@ -1,0 +1,44 @@
+{
+  "revision": 1,
+  "customerId": "cus_shiftproof_synthetic",
+  "apiVersion": "2022-11-15",
+  "clockStartMs": 1700000000000,
+  "randomValue": 0.25,
+  "scenarios": [
+    {
+      "id": "retry-500-then-200",
+      "responses": [
+        {
+          "status": 500,
+          "headers": {"request-id": "req_synthetic_500"},
+          "body": {"error": {"type": "api_error", "message": "Synthetic temporary failure"}}
+        },
+        {
+          "status": 200,
+          "headers": {"request-id": "req_synthetic_ok"},
+          "body": {"id": "cus_shiftproof_synthetic", "object": "customer", "description": null, "metadata": {}}
+        }
+      ]
+    },
+    {
+      "id": "equal-200",
+      "responses": [
+        {
+          "status": 200,
+          "headers": {"request-id": "req_synthetic_ok"},
+          "body": {"id": "cus_shiftproof_synthetic", "object": "customer", "description": null, "metadata": {}}
+        }
+      ]
+    },
+    {
+      "id": "failure-400",
+      "responses": [
+        {
+          "status": 400,
+          "headers": {"request-id": "req_synthetic_400"},
+          "body": {"error": {"type": "invalid_request_error", "code": "resource_missing", "param": "id", "message": "Synthetic missing customer"}}
+        }
+      ]
+    }
+  ]
+}

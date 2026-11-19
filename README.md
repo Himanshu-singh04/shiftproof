@@ -10,7 +10,7 @@ Inspect one TypeScript SDK upgrade using versioned documentation, affected call 
 
 ## Status
 
-Repository foundation exists; product planning is proposed for review under [issue #4](https://github.com/Himanshu-singh04/shiftproof/issues/4). The first SDK/package/source/target version pair is **unselected**. No product runtime, validated compatibility results, release artifacts, or persistent project workers exist. TypeScript/Node CLI architecture and exact runtime decisions require review. Existing checks are in [CONTRIBUTING](CONTRIBUTING.md).
+Foundation and planning [PR #5](https://github.com/Himanshu-singh04/shiftproof/pull/5) are merged; App-rename corrections [PR #7](https://github.com/Himanshu-singh04/shiftproof/pull/7) and persistent-worker [provisioning #8](https://github.com/Himanshu-singh04/shiftproof/issues/8) are complete. The product's supported SDK/package/source/target pair remains **UNSELECTED**. [B01 research](docs/b01-sdk-selection.md) proposes a pair with bounded synthetic evidence, pending review and founder approval. No product runtime or release artifact exists; technical ADRs remain gated. Existing foundation checks are in [CONTRIBUTING](CONTRIBUTING.md).
 
 ## Product planning
 
@@ -41,4 +41,4 @@ agent attribution, and evidence requirements.
 - Report the commit and push result to the coordinator. A local commit is not a remote backup until the push succeeds.
 - Use task branches for substantive implementation work and preserve unrelated changes.
 
-Source and docs are on the pendrive; execution uses Mac CPU/RAM. Current coordinator history and credentials remain on the Mac. Model/cache directories exist but routing is not configured. See [operations](docs/operations.md) for the full storage boundary.
+Source, docs and the dedicated worker's history/OAuth database are on the pendrive; execution uses Mac CPU/RAM. Coordinator history and the GitHub App key remain on the Mac. Worker inference uses the existing subscription; product inference is not provisioned or required. See [operations](docs/operations.md) for the storage boundary.

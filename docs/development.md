@@ -179,6 +179,8 @@ helper for a fresh scoped token. Lost App key: generate a replacement in App
 settings, replace the local key, verify authentication, then revoke the old key.
 An interrupted helper may leave a token valid until its normal expiration.
 
-The project checkout is on `/Volumes/AIWorkspace`. Dedicated project-session
-database placement and routing are pending; changing directory alone does not
-move OpenCode history. The coordinator remains on the Mac.
+The project checkout and dedicated worker history/OAuth database are on
+`/Volumes/AIWorkspace`, verified through project-service restart and same-session
+continuity in [provisioning #8](https://github.com/Himanshu-singh04/shiftproof/issues/8#issuecomment-6999733805).
+Coordinator history and the GitHub App key remain on the Mac. This is session/service
+separation, not credential sandboxing; changing directory alone does not move history.

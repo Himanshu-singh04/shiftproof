@@ -13,7 +13,7 @@ version: "0.1"
 - [x] All template sections are populated or explicitly N/A.
 - [x] No unresolved clarification markers remain; decisions have explicit gates.
 - [x] Architecture pattern is stated with rationale.
-- [ ] **All architecture decisions confirmed by user**: pending PR confirmation.
+- [ ] **All architecture decisions confirmed by user**: technical ADR gates remain pending.
 - [x] Proposed interface contracts are specified below and in the evidence contract.
 
 ### QUALITY CHECKS (Should Pass)
@@ -24,7 +24,8 @@ version: "0.1"
 - [x] Error cases, measurable proposed targets and test mappings are specified.
 - [ ] Implementation readiness: selection/runtime/isolation ADRs still block implementation.
 
-This is a reviewable proposal, not an approved or implemented architecture.
+Planning was approved in [PR #5](https://github.com/Himanshu-singh04/shiftproof/pull/5);
+technical ADR confirmations below remain pending, and no product architecture is implemented.
 Template headings/order are retained verbatim, including generic example labels.
 
 ## Constraints
@@ -37,8 +38,9 @@ Template headings/order are retained verbatim, including generic example labels.
   Compilation, documentation and content hashes cannot substitute for behavioral evidence.
 - CON-4: Customer source stays read-only and is parsed without executing imported code.
   Replay executes only reviewed harness/SDK artifacts behind tested isolation.
-- CON-5: Pendrive source/docs; Mac compute, current history and credentials.
-  Persistent servers/workers and model/cache routing are not provisioned.
+- CON-5: Pendrive source/docs and dedicated worker history/OAuth; Mac compute,
+  coordinator history and App key. Development-worker provisioning is verified
+  in #8; product inference and replay isolation remain unprovisioned.
 - CON-6: No application code exists. TypeScript/Node, package manager, exact runtime,
   isolation and release format are proposals requiring confirmation.
 
@@ -70,6 +72,7 @@ structure/validation. User-confirmation gates remain open deliberately.
   validates tracked text and relative file links, not product behavior.
 - CONTRIBUTING's Python policy tests and actionlint: HIGH; existing check surface.
 - Application manifests, runtime sources and product tests: N/A, none exist.
+  [B01](../../b01-sdk-selection.md) adds a separate research-only experiment.
   Directory names below are proposed additions, not discovered implementation.
 
 #### External APIs (if applicable)
@@ -134,7 +137,7 @@ never reinterpret historical evidence silently. Human owner reviews all contract
 
 ### Project Commands
 
-Existing commands from CONTRIBUTING, and only these are currently supported:
+Existing foundation commands from CONTRIBUTING:
 
 ```sh
 python3 scripts/check_repository.py
@@ -145,6 +148,7 @@ git diff --check
 
 Product install/dev/build/run/test commands: N/A today. The proposed CLI invocation
 in operations is not available. No database migrate/seed commands are needed.
+The B01 experiment command is documented separately; it is not a product command.
 
 ## Solution Strategy
 
@@ -368,7 +372,7 @@ No credentials needed for synthetic replay. Initial concurrency one and proposed
 N/A for independently deployed services. Tool, schema and adapter are released as
 one compatible bundle; reject mismatched revisions. Roll back the artifact, retain
 old evidence and create new runs. No data migrations or distributed transactions.
-Persistent project server/worker setup is separate future work, not CLI deployment.
+Persistent development-worker setup was completed separately in #8, not as CLI deployment.
 
 ## Cross-Cutting Concepts
 

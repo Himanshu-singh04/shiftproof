@@ -1,7 +1,9 @@
 # Proposed roadmap and bounded backlog
 
-Status: planning only. Task IDs below are local backlog identifiers, not claims
-that GitHub issues or implementations exist. All architecture ADRs require review.
+Status: planning approved in PR #5; product implementation has not begun.
+B01 is tracked in [issue #9](https://github.com/Himanshu-singh04/shiftproof/issues/9),
+with a [research recommendation](b01-sdk-selection.md) pending review and approval.
+Other task IDs are backlog identifiers, not claims of implementation. Technical ADRs remain gated.
 Dependencies form release gates; a failed gate stops downstream implementation.
 See [product](product.md), [design](specs/001-mvp/solution-design.md),
 [testing](testing.md), and [operations](operations.md).

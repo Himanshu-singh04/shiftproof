@@ -1,7 +1,9 @@
 # Local operations and deployment proposal
 
-Status: proposed operating model; no product runtime, package, server or worker exists.
-Only the foundation commands in [CONTRIBUTING](../CONTRIBUTING.md) are available.
+Status: approved planning with technical decisions still gated; no product runtime or package exists.
+A persistent development worker is provisioned; it is not a product deployment.
+Foundation commands are in [CONTRIBUTING](../CONTRIBUTING.md); the separate
+[B01 experiment](b01-sdk-selection.md) has a research-only rerun command.
 All product installation, execution and recovery steps below describe future work.
 
 ## Storage and execution reality
@@ -10,18 +12,20 @@ All product installation, execution and recovery steps below describe future wor
 | --- | --- |
 | Source and documentation | Pendrive checkout `/Volumes/AIWorkspace/projects/shiftproof`; all planning artifacts live here |
 | CPU and RAM | Mac executes processes; observed 16 GiB RAM and eight logical CPUs, not a benchmark |
-| Coordinator and current session history | Mac `/Users/himanshusingh/.local/share/opencode/opencode.db`; changing checkout directory does not relocate it |
-| Credentials | Mac owner-controlled storage outside Git; not moved to the pendrive by this work |
-| Models and caches | Directories exist, but model/cache routing is not configured; no model selected or benchmarked |
-| Persistent project server/workers | Not provisioned; this planning work uses temporary specialists, not persistent workers |
+| Coordinator history | Remains on the Mac; project-service restart did not move or restart the coordinator |
+| Dedicated worker history and OAuth | Pendrive-backed project database, explicitly authorized by founder; outside Git |
+| GitHub App key | Remains in owner-controlled Mac storage outside Git; scoped helper handles GitHub work |
+| Product models and caches | No product model selected or provisioned; B01 npm cache explicitly uses `/Volumes/AIWorkspace/caches/shiftproof/npm` |
+| Persistent development worker | Provisioned in #8; same session survived project-service restart; resumable history, not continuous autonomous execution |
 | GitHub | Remote copies of pushed source/docs and CI/review records; unpushed local changes are not remotely backed up |
 | Runtime evidence | Proposed user-selected local directory outside Git; artifacts/local citations are run-bundle-relative; host roots are operational metadata, with explicit retention and capacity |
 
-Do not call the pendrive “all memory”: it stores files, while compute, current
-history and credentials remain on the Mac. Future per-project history, model
-weights and caches need explicit routing, permissions, backup and recovery tests.
-Do not copy a live OpenCode database as an assumed consistent backup or claim a
-new session service exists merely because a directory was created.
+The [coordinator's provisioning verification](https://github.com/Himanshu-singh04/shiftproof/issues/8#issuecomment-6999733805)
+records database handles, routing and restart continuity. Worker inference uses the
+existing OpenAI subscription and consumes its allowance; product inference remains
+optional, unprovisioned and unnecessary for MVP. Mac CPU/RAM executes local processes.
+Service separation is not an OS credential sandbox. Reboot, unplug/power-loss and
+full-restore drills were not claimed; a live database copy is not an assumed consistent backup.
 
 ## Proposed install and startup
 
@@ -121,5 +125,5 @@ self-approve. New heads invalidate earlier review/approval according to that pol
 Keep founder expenditure at $0 in the initial phase: existing local or explicitly
 customer-owned compute only, no new paid inference/hosting/API credits. Proposed
 AI tooling is read-only and bounded; credentials remain outside evidence manifests.
-Before persistent workers are provisioned, agree session storage/routing, startup,
-backup/restore and ownership separately; no provisioning is part of this plan.
+Development-worker provisioning was completed separately in #8; its operational
+records/tools remain outside product Git. Product isolation and release gates above remain open.

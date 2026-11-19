@@ -37,5 +37,7 @@ are now active on the default branch following the approved foundation merge.
 PR #2 merged as `1d9fbe2edddf97a678bf3b7d5e93b521f5796c07`; main CI passed.
 See the [merge verification](https://github.com/Himanshu-singh04/shiftproof/pull/2#issuecomment-6974823754).
 
-No application, product tests, release artifacts, or dedicated project server
-have been created. Those are subsequent milestones, not implied by green CI.
+At foundation delivery, no application, product tests, release artifacts, or
+dedicated project server had been created. Development-worker provisioning was
+subsequently verified in [issue #8](https://github.com/Himanshu-singh04/shiftproof/issues/8).
+No product implementation or release is implied by foundation CI or worker provisioning.

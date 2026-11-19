@@ -8,3 +8,18 @@ updates:
     open-pull-requests-limit: 3
     commit-message:
       prefix: chore(deps)
+  - package-ecosystem: npm
+    directory: /experiments/b01-sdk-selection
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore(deps)
+    versioning-strategy: lockfile-only
+    # Historical experiment inputs, not production dependencies. Cover both
+    # alias keys and the de-aliased package name; see docs/b01-sdk-selection.md.
+    ignore:
+      - dependency-name: stripe-source
+      - dependency-name: stripe-target
+      - dependency-name: stripe
