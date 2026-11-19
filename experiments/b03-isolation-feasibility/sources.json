@@ -1,0 +1,41 @@
+[
+  {
+    "source": "https://raw.githubusercontent.com/nodejs/node/v26.13.0/doc/api/permissions.md",
+    "readOn": "2026-11-19",
+    "sha256": "32b6ad04aa613983e3db90581dabeca9d3097249109cc4e3fafea7a4e335040d",
+    "excerpts": [
+      "* [Process-based permissions](#process-based-permissions) control the Node.js\n  process's access to resources.\n  The resource can be entirely allowed or denied, or actions related to it can\n  be controlled. For example, file system reads can be allowed while denying\n  writes.\n  This feature does not protect against malicious code. According to the Node.js\n  [Security Policy][], Node.js trusts any code it is asked to run.",
+      "* The model does not inherit to a worker thread. A default\n  `worker_threads.Worker` (no `execArgv` option) still receives the parent\n  process CLI flags, including `--permission` and `--allow-*` if those were\n  passed to the parent. Setting `execArgv` explicitly, including\n  `execArgv: []`, replaces the inherited flags. The worker then does not keep\n  the parent's Permission Model grants unless those flags are listed again in\n  `execArgv`. That difference is intended, not a bypass.\n* When using the Permission Model the following features will be restricted:\n  * Native modules\n  * Network\n  * Child process\n  * Worker Threads\n  * Inspector protocol\n  * File system access\n  * WASI\n  * FFI\n  * OpenSSL STORE loaders\n* The Permission Model is initialized after the Node.js environment is set up.\n  However, certain flags such as `--env-file` or `--openssl-config` are designed\n  to read files before environment initialization. As a result, such flags are\n  not subject to the rules of the Permission Model. The same applies for V8\n  flags that can be set via runtime through `v8.setFlagsFromString`.\n* Files that Node.js itself creates, writes, or reads at a location selected\n  by an operator flag may not be consistently checked against the Permission\n  Model, in particular when the flag accepts a template or pattern that\n  expands to several paths. For example, trace files rotated by\n  `--trace-event-file-pattern` (`${rotation}`) can be written even when the\n  expanded path is not covered by `--allow-fs-write`. Because the location is\n  chosen by the operator, gaps like this are treated as regular bugs rather\n  than vulnerabilities. Please report them through the regular issue tracker.\n* OpenSSL engines cannot be requested at runtime when the Permission\n  Model is enabled, affecting the built-in crypto, https, and tls modules.\n* Run-Time Loadable Extensions cannot be loaded when the Permission Model is\n  enabled, affecting the sqlite module.\n* Using existing file descriptors via the `node:fs` module bypasses the\n  Permission Model.",
+      "This is consistent with the Node.js threat model: Node.js trusts the OS environment in which it runs.\nCross-process signaling is an operating-system-level capability; restricting it is the responsibility of\nthe operator (for example, using OS-level process isolation, separate OS users per process, or\nseccomp/AppArmor profiles on Linux).",
+      "* Symbolic links will be followed even to locations outside of the set of paths\n  that access has been granted to. Relative symbolic links may allow access to\n  arbitrary files and directories. When starting applications with the\n  permission model enabled, you must ensure that no paths to which access has\n  been granted contain relative symbolic links."
+    ]
+  },
+  {
+    "source": "installed Apple manual: /usr/share/man/man1/sandbox-exec.1",
+    "readOn": "2026-11-19",
+    "sha256": "0d264f72dc6a8e0db5474840f33b512542c469beb109ed146c17055da287336b",
+    "excerpts": [
+      "execute within a sandbox (DEPRECATED)",
+      "Developers who wish to sandbox an app should instead adopt the App Sandbox feature described in the App Sandbox Design Guide."
+    ]
+  },
+  {
+    "source": "installed Apple manual: /usr/share/man/man7/sandbox.7",
+    "readOn": "2026-11-19",
+    "sha256": "9043d9296715714f95b4de6c5f88a5436c5cc3b83b62641327212078c5c69b04",
+    "excerpts": [
+      "New processes inherit the sandbox of their parent.",
+      "Restrictions are generally enforced upon acquisition of operating system resources only.",
+      "If the application already has a file descriptor opened for writing, it may use that file descriptor regardless of restrictions."
+    ]
+  },
+  {
+    "source": "https://developer.apple.com/tutorials/data/documentation/security/app-sandbox.json",
+    "readOn": "2026-11-19",
+    "sha256": "f471b5e1b721b0c3036a11da38117b361a7ed2e3e06df833ceaa05829d899d24",
+    "excerpts": [
+      "Restrict access to system resources and user data in macOS apps to contain damage if an app becomes compromised.",
+      "App Sandbox provides protection to system resources and user data by limiting your app\u2019s access to resources requested through entitlements."
+    ]
+  }
+]

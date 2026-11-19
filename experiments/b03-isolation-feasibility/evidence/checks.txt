@@ -1,0 +1,7 @@
+$ python3 -B experiments/b03-isolation-feasibility/check.py
+PASS: rejects missing evidence
+PASS: rejects crash evidence
+PASS: rejects false-compatible evidence
+PASS: 48 operation probes, 6 cap controls, 9 tree controls, environment/filesystem/denied-launch controls
+NO-GO: replay disabled / unknown; no SDK executed, no external network/DNS probed
+exit: 0

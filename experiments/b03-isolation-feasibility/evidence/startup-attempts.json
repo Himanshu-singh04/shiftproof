@@ -1,0 +1,126 @@
+[
+  {
+    "attemptFile": "initial-startup.json",
+    "observations": {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-p",
+        "(version 1)\n(deny default)\n(allow process-exec (literal \"/opt/homebrew/Cellar/node/26.13.0_2/bin/node\"))\n(allow file-read* (subpath \"/System/Library\") (subpath \"/usr/lib\") (subpath \"/opt/homebrew\") (subpath \"/Volumes/AIWorkspace/caches/shiftproof/b03\"))\n(allow sysctl-read)\n(allow mach-lookup)\n",
+        "/opt/homebrew/Cellar/node/26.13.0_2/bin/node",
+        "-e",
+        "console.log(\"B03_STARTUP\")"
+      ],
+      "status": -6,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "attemptFile": "scoped-startup.json",
+    "observations": {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-p",
+        "(version 1)\n(allow default)\n(deny network*)\n(deny file-read* file-write*)\n(allow file-read* (subpath \"/System/Library\") (subpath \"/usr/lib\") (subpath \"/opt/homebrew\") (literal \"/dev/null\") (literal \"/dev/urandom\") (literal \"/dev/random\") (subpath \"/Volumes/AIWorkspace/caches/shiftproof/b03\"))\n(allow file-write* (subpath \"/Volumes/AIWorkspace/caches/shiftproof/b03\"))\n(deny process-fork)\n(deny process-exec)\n(allow process-exec (literal \"/opt/homebrew/Cellar/node/26.13.0_2/bin/node\"))\n",
+        "/opt/homebrew/Cellar/node/26.13.0_2/bin/node",
+        "-e",
+        "console.log(\"B03_STARTUP\")"
+      ],
+      "status": -6,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "attemptFile": "allow-default-startup.json",
+    "observations": [
+      {
+        "argv": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)(allow default)",
+          "/usr/bin/true"
+        ],
+        "status": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)(allow default)",
+          "/opt/homebrew/Cellar/node/26.13.0_2/bin/node",
+          "-e",
+          "console.log(\"B03_STARTUP\")"
+        ],
+        "status": 0,
+        "stdout": "B03_STARTUP\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "attemptFile": "startup-rule-controls.json",
+    "observations": [
+      {
+        "label": "network",
+        "argv": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)(allow default)(deny network*)",
+          "/opt/homebrew/Cellar/node/26.13.0_2/bin/node",
+          "-e",
+          "console.log(\"B03_STARTUP\")"
+        ],
+        "status": 0,
+        "stdout": "B03_STARTUP\n",
+        "stderr": ""
+      },
+      {
+        "label": "process",
+        "argv": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)(allow default)(deny process-fork)(deny process-exec)(allow process-exec (literal \"/opt/homebrew/Cellar/node/26.13.0_2/bin/node\"))",
+          "/opt/homebrew/Cellar/node/26.13.0_2/bin/node",
+          "-e",
+          "console.log(\"B03_STARTUP\")"
+        ],
+        "status": 0,
+        "stdout": "B03_STARTUP\n",
+        "stderr": ""
+      },
+      {
+        "label": "files",
+        "argv": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)(allow default)(deny file-read* file-write*)(allow file-read* (subpath \"/System/Library\") (subpath \"/usr/lib\") (subpath \"/opt/homebrew\") (literal \"/dev/null\") (literal \"/dev/urandom\") (literal \"/dev/random\") (subpath \"/Volumes/AIWorkspace/caches/shiftproof/b03\"))(allow file-write* (subpath \"/Volumes/AIWorkspace/caches/shiftproof/b03\"))",
+          "/opt/homebrew/Cellar/node/26.13.0_2/bin/node",
+          "-e",
+          "console.log(\"B03_STARTUP\")"
+        ],
+        "status": -6,
+        "stdout": "",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "attemptFile": "data-only-startup.json",
+    "observations": {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-p",
+        "(version 1)(allow default)(deny network*)(deny file-read-data file-write*)(allow file-read-data (subpath \"/System/Library\") (subpath \"/usr/lib\") (subpath \"/opt/homebrew\") (literal \"/dev/null\") (literal \"/dev/urandom\") (literal \"/dev/random\") (subpath \"/Volumes/AIWorkspace/caches/shiftproof/b03\"))(allow file-write* (subpath \"/Volumes/AIWorkspace/caches/shiftproof/b03\"))(deny process-fork)(deny process-exec)(allow process-exec (literal \"/opt/homebrew/Cellar/node/26.13.0_2/bin/node\"))",
+        "/opt/homebrew/Cellar/node/26.13.0_2/bin/node",
+        "-e",
+        "console.log(\"B03_STARTUP\")"
+      ],
+      "status": -6,
+      "stdout": "",
+      "stderr": ""
+    }
+  }
+]

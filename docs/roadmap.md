@@ -4,7 +4,11 @@ Status: planning approved in PR #5; product implementation has not begun.
 B01 is tracked in [issue #9](https://github.com/Himanshu-singh04/shiftproof/issues/9),
 with an [accepted research pair](b01-sdk-selection.md), merged in PR #10.
 B02 is tracked in [issue #11](https://github.com/Himanshu-singh04/shiftproof/issues/11)
-and the [runtime evidence record](b02-runtime-validation.md), pending review.
+and the [runtime evidence record](b02-runtime-validation.md), accepted in PR #12
+for Node 26.13.1 / npm 12.2.3 / TypeScript 7.0.2 research tooling.
+[B03 isolation research](b03-isolation-feasibility.md) remains NO-GO / replay disabled:
+independently verified historical Node 26.13.0 probes are not selected-runtime
+containment proof. The B02-main integration awaits coordinator re-review.
 Other task IDs are backlog identifiers, not claims of implementation. Technical ADRs remain gated.
 Dependencies form release gates; a failed gate stops downstream implementation.
 See [product](product.md), [design](specs/001-mvp/solution-design.md),
@@ -60,7 +64,7 @@ two focused working days. Tests here are future acceptance expectations.
 | ID | Task / dependencies | Acceptance criteria | Tests / requirements |
 | --- | --- | --- | --- |
 | B02 | Runtime/package manager pin / B01 | Choose exact supported Node/TypeScript versions and one lockfile format; document clean install, script policy and pinned transitive tree | Clean offline-after-provisioning install; mismatched identity rejection / SP-01, SP-09 |
-| B03 | Replay isolation feasibility / B01 | Demonstrate enforceable network/filesystem/process limits for reviewed SDK harness; record unsupported platforms; choose mechanism or disable replay | Denied egress/write/child-process probes, timeout/cleanup / SP-09, SP-11 |
+| B03 | [Replay isolation feasibility](b03-isolation-feasibility.md) / B01; issue #13 | Demonstrate enforceable network/filesystem/process limits for reviewed SDK harness; record unsupported platforms; choose mechanism or disable replay | Denied egress/write/child-process probes, timeout/cleanup / SP-09, SP-11 |
 | B04 | Schema revision and aggregator / B01, B02 | Harden pair-specific fields from spike; validate references; only validated fail mappings establish incompatibility, otherwise apply unknown/pass gates | T01, T03, T05–T07 property and table cases / SP-01, SP-03, SP-05–SP-07 |
 | B05 | Read-only discovery / B04 | Supported imports/aliases mapped; computed calls, escapes, parse failures and exclusions visible; no module execution | T02 fixtures including malicious top-level code / SP-02, SP-09 |
 | B06 | Selected adapter / B03, B04 | Declare capability support, source expectations, transport seam and identical scenario mapping | T03, T04 known change/equal/error cases / SP-03, SP-04 |

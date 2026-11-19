@@ -1,10 +1,14 @@
 # B02: isolated runtime/toolchain validation
 
-Status: recommend **Node 26.13.1, TypeScript 7.0.2, standalone npm 12.2.3,
+Status: accepted **Node 26.13.1, TypeScript 7.0.2, standalone npm 12.2.3,
 package-lock v3** for the bounded darwin-arm64 research target in
 [issue #11](https://github.com/Himanshu-singh04/shiftproof/issues/11).
-Worker validation passed; independent coordinator review and founder approval
-remain pending. This is not a product runtime release or a production SDK recommendation.
+Worker validation, coordinator review and founder approval completed in
+[PR #12](https://github.com/Himanshu-singh04/shiftproof/pull/12), merged as
+`68cd7a7b6139383391ffdb8bf0f3ad7ac28fac2b`.
+This is not a product runtime release or a production SDK recommendation.
+[B03's historical Node 26.13.0 probes](b03-isolation-feasibility.md) retain their
+separate NO-GO result; accepting these tooling pins does not establish isolation.
 
 ## Request and scope
 
@@ -284,7 +288,7 @@ B01 historical aliases and their existing advisory-triage policy are unchanged.
 | A3 | Met | Committed-lock fresh offline installs, real compile/TS2322, 18 repeated B01 scenarios, raw failed and successful attempts, explicitly constrained comparison. |
 | A4 | Met within declared trust boundary | Pre-load gates; actual positive toolchain and portable disposable/mock negatives. Installed implementation authentication is expressly unverified. |
 | A5 | Met | Commands, full hashes, limitations, cleanup and manual/Dependabot maintenance; B03 remains open. |
-| A6 | Met at worker verification | B01 research approval reconciled; original experiment unchanged; portable CI checks added. Exact-revision coordinator review remains pending. |
+| A6 | Met at worker verification | B01 research approval reconciled; original experiment unchanged; portable CI checks added. Subsequent coordinator review and founder approval completed in PR #12. |
 
 Required local commands: `python3 scripts/check_repository.py` PASS;
 `python3 -m unittest discover -s scripts -p 'test_*.py'` PASS (25 tests);
@@ -304,4 +308,4 @@ subsequent check passed. No TLS/access protections were weakened.
 Not run: Node 24 execution, other-platform toolchains, detached signature validation,
 full advisory/security audit, hosted Dependabot update proposals, enforced B03
 isolation, customer code, live Stripe calls, product tests, performance benchmarks
-or pilot validation. Initial selection is a research recommendation awaiting review.
+or pilot validation. Selection is accepted for the bounded research target only.
