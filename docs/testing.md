@@ -3,6 +3,9 @@
 Status: proposed product test plan. No product test suite or measured results exist.
 Foundation checks are in [CONTRIBUTING](../CONTRIBUTING.md); the separate
 [B01 spike check](b01-sdk-selection.md) verifies research fixtures, not this product test matrix.
+The [B02 toolchain record](b02-runtime-validation.md) adds manual darwin-arm64
+offline compile/replay and portable mocked-dispatch identity checks; neither is
+the planned product test suite or B03 sandbox validation.
 See [product requirements](product.md) and [evidence contract](evidence-contract.md).
 
 ## Current verification

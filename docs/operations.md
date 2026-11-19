@@ -4,6 +4,8 @@ Status: approved planning with technical decisions still gated; no product runti
 A persistent development worker is provisioned; it is not a product deployment.
 Foundation commands are in [CONTRIBUTING](../CONTRIBUTING.md); the separate
 [B01 experiment](b01-sdk-selection.md) has a research-only rerun command.
+[B02](b02-runtime-validation.md) documents verified task-local toolchain provisioning,
+fresh offline reproduction, retained attempts and scoped cleanup on the assigned Mac.
 All product installation, execution and recovery steps below describe future work.
 
 ## Storage and execution reality
