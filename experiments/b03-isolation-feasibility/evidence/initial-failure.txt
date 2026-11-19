@@ -1,0 +1,13 @@
+Command: python3 -B experiments/b03-isolation-feasibility/run.py
+Exit: 1
+Raw observations: /Volumes/AIWorkspace/caches/shiftproof/b03/run-4gjeqsms
+
+Console traceback excerpt (intermediate frames omitted):
+  File "/Volumes/AIWorkspace/projects/shiftproof/experiments/b03-isolation-feasibility/run.py", line 85, in measure
+    os.killpg(process.pid, signal.SIGKILL)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted
+
+Only the inventory record had been appended. This attempt supplies no completed
+probe or successful cleanup evidence. The corrected runner records group-signal
+errors and independently checks owned-child state; it does not erase this attempt.

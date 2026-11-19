@@ -57,7 +57,7 @@ two focused working days. Tests here are future acceptance expectations.
 | ID | Task / dependencies | Acceptance criteria | Tests / requirements |
 | --- | --- | --- | --- |
 | B02 | Runtime/package manager pin / B01 | Choose exact supported Node/TypeScript versions and one lockfile format; document clean install, script policy and pinned transitive tree | Clean offline-after-provisioning install; mismatched identity rejection / SP-01, SP-09 |
-| B03 | Replay isolation feasibility / B01 | Demonstrate enforceable network/filesystem/process limits for reviewed SDK harness; record unsupported platforms; choose mechanism or disable replay | Denied egress/write/child-process probes, timeout/cleanup / SP-09, SP-11 |
+| B03 | [Replay isolation feasibility](b03-isolation-feasibility.md) / B01; issue #13 | Demonstrate enforceable network/filesystem/process limits for reviewed SDK harness; record unsupported platforms; choose mechanism or disable replay | Denied egress/write/child-process probes, timeout/cleanup / SP-09, SP-11 |
 | B04 | Schema revision and aggregator / B01, B02 | Harden pair-specific fields from spike; validate references; only validated fail mappings establish incompatibility, otherwise apply unknown/pass gates | T01, T03, T05–T07 property and table cases / SP-01, SP-03, SP-05–SP-07 |
 | B05 | Read-only discovery / B04 | Supported imports/aliases mapped; computed calls, escapes, parse failures and exclusions visible; no module execution | T02 fixtures including malicious top-level code / SP-02, SP-09 |
 | B06 | Selected adapter / B03, B04 | Declare capability support, source expectations, transport seam and identical scenario mapping | T03, T04 known change/equal/error cases / SP-03, SP-04 |

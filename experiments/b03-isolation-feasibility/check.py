@@ -5,7 +5,7 @@ import copy
 import json
 from pathlib import Path
 
-from run import ACTIONS, CAP, decision, launch_replay, parse_probe, require
+from run import ACTIONS, CAP, HERE, decision, launch_replay, parse_probe, require, sha
 
 
 def check(rows):
@@ -15,6 +15,8 @@ def check(rows):
     require(len(by_kind.get('inventory', [])) == 1, 'missing inventory')
     require(by_kind['inventory'][0]['runtime'] == {
         'version': 'v26.13.0', 'platform': 'darwin', 'arch': 'arm64'}, 'runtime drift')
+    require(by_kind['inventory'][0]['sourceHashes'] == {
+        name: sha(HERE / name) for name in ('probe.cjs', 'run.py')}, 'probe/supervisor source changed; new measurements required')
     probes = {(r['mechanism'], r['action']): r for r in by_kind.get('probe', [])}
     mechanisms = ('baseline', 'sandbox-exec', 'node-permission')
     require(len(probes) == len(by_kind.get('probe', [])) == 3 * len(ACTIONS), 'missing/duplicate probes')
