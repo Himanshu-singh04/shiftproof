@@ -2,7 +2,7 @@
 
 Status: recommend **`stripe` 12.18.0 → 13.0.0** for the first bounded adapter
 investigation, based on the offline observations below. The product's supported
-pair remains **UNSELECTED**. Coordinator independent rerun/review and separate
+pair remains **UNSELECTED**. Coordinator review of the current revision and separate
 founder approval are pending. This is research for
 [issue #9](https://github.com/Himanshu-singh04/shiftproof/issues/9), not a migration
 recommendation for a real application or approval of runtime/isolation ADRs.
@@ -105,11 +105,32 @@ These are observations, not B02's supported-runtime or TypeScript choices.
 The harness is plain CommonJS JavaScript exercising the SDK's shipped Node entrypoint;
 no transpilation, customer imports or new framework is involved.
 
-From the repository root, provision public packages (network allowed only here):
+From the repository root on the coordinator/worker host, provision public packages
+(network allowed only here). The exact observed command is retained:
 
 ```sh
 npm ci --prefix experiments/b01-sdk-selection --ignore-scripts --no-audit --no-fund --cache /Volumes/AIWorkspace/caches/shiftproof/npm
 ```
+
+On this host, the authorized pendrive checkout/cache remain mandatory. Verify the
+AIWorkspace mount using the provisioning procedure before execution; if it is
+missing or unwritable, stop. Do not recreate its mount path or fall back to Mac
+storage. The command above is not itself a mount-identity enforcement mechanism.
+
+**External reviewers on a different host** may explicitly choose a writable cache
+outside their checkout, without requiring the AIWorkspace mount. For example, from
+their repository root in a POSIX shell:
+
+```sh
+REVIEW_CACHE="$HOME/.cache/shiftproof-b01/npm"
+npm ci --prefix experiments/b01-sdk-selection --ignore-scripts --no-audit --no-fund --cache "$REVIEW_CACHE"
+```
+
+Replace that assignment with an appropriate writable absolute path on the reviewer's
+host. This is a separate external-reviewer example, not an automatic fallback for
+the coordinator/worker host. It has not been executed on another host. The check
+below resolves research files relative to its checkout; captured runtime/platform
+metadata can differ from the retained darwin arm64 observation.
 
 Then the **one-command offline spike check** is:
 
@@ -151,6 +172,44 @@ installed transitives are MIT except `qs` (BSD-3-Clause), as recorded in the loc
 The synthetic customer, request IDs, error messages and null/empty fields were
 reviewed before retention. No API key is supplied, no Authorization header is
 permitted, and no credentials or customer evidence appear in the captures.
+
+### Historical dependency maintenance
+
+The scoped npm entry in [.github/dependabot.yml](../.github/dependabot.yml) follows
+the existing Monday/weekly schedule, three-open-version-PR limit and `chore(deps)`
+prefix. Stripe 12.18.0 and 13.0.0 are fixed experimental inputs. Ignore rules name
+both manifest aliases (`stripe-source`, `stripe-target`) and their real package
+name (`stripe`); `versioning-strategy: lockfile-only` additionally forbids updates
+requiring manifest changes. These exclusions apply to security updates too: an
+advisory affecting a historical Stripe artifact needs explicit triage and a bounded
+decision to retain, retire or replace the experiment, not an automatic pair upgrade.
+
+Coverage is deliberately limited: unignored vulnerable transitives in the lockfile
+remain eligible for Dependabot security-update PRs where remediation is possible
+within the fixed pair. This is not a promise to routinely refresh every non-vulnerable
+npm transitive. GitHub's [official options reference](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference)
+(consulted 2026-11-19, `allow`, `ignore`, `versioning-strategy`, and
+`open-pull-requests-limit`) distinguishes default direct version updates from
+lockfile security updates; it does not list npm as supporting `dependency-type: indirect`
+under `allow`. Its `lockfile-only` definition says to ignore versions requiring manifest
+changes. Security updates have a separate limit; the three-PR cap is for version PRs.
+
+The [upstream npm parser](https://github.com/dependabot/dependabot-core/blob/main/npm_and_yarn/lib/dependabot/npm_and_yarn/file_parser.rb)
+was inspected on the same date: `dealias_package` can map an npm alias to its real
+name, while `ignore_requirement?` skips alias requirements when de-aliasing is off.
+The three explicit ignores cover the alias and normalized names; they do not rely
+on aliases remaining unsupported. No hosted Dependabot update run was performed in
+this correction; actual proposal behavior must be inspected when the configuration
+reaches the default branch.
+
+Any proposed transitive change, including a security fix, changes the experiment's
+identity. Before merging, verify both exact Stripe aliases and their lock entries,
+inspect the dependency diff, perform script-disabled provisioning, capture a new
+three-repeat spike result, compare it to the prior evidence, and obtain coordinator
+review and founder approval. Preserve the old revision/captures for comparison;
+never reuse old observations as proof for a changed lockfile. Non-security transitive
+refreshes require a bounded maintenance issue and the same evidence. If a fix cannot
+preserve the pair, record the limitation and escalate instead of silently changing it.
 
 ## Observed results
 
@@ -264,4 +323,7 @@ the summary; the PR timeline records revalidation and current CI at the pushed r
 Not run: product suites (none exist), TypeScript compilation, live SDK services,
 S3 replay, adversarial B03 isolation, additional platforms/runtimes, full security
 audit, benchmarks or pilot validation. npm audit was deliberately disabled during
-provisioning. Founder approval and coordinator independent verification are pending.
+provisioning. The coordinator independently verified the original research head
+`488314fd97260f2a46366b3cee1bf3301b809893`, including byte-identical captures and all
+ten documented SDK file hashes. Founder approval and coordinator verification of
+the R2/R3 maintenance/documentation correction remain pending.
