@@ -2,7 +2,9 @@
 
 Status: planning approved in PR #5; product implementation has not begun.
 B01 is tracked in [issue #9](https://github.com/Himanshu-singh04/shiftproof/issues/9),
-with a [research recommendation](b01-sdk-selection.md) pending review and approval.
+with an [accepted research pair](b01-sdk-selection.md), merged in PR #10.
+B02 is tracked in [issue #11](https://github.com/Himanshu-singh04/shiftproof/issues/11)
+and the [runtime evidence record](b02-runtime-validation.md), pending review.
 Other task IDs are backlog identifiers, not claims of implementation. Technical ADRs remain gated.
 Dependencies form release gates; a failed gate stops downstream implementation.
 See [product](product.md), [design](specs/001-mvp/solution-design.md),

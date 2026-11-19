@@ -1,9 +1,9 @@
 # B01: SDK/version selection evidence
 
-Status: recommend **`stripe` 12.18.0 → 13.0.0** for the first bounded adapter
-investigation, based on the offline observations below. The product's supported
-pair remains **UNSELECTED**. Coordinator review of the current revision and separate
-founder approval are pending. This is research for
+Status: **`stripe` 12.18.0 → 13.0.0 selected for research**, accepted in
+[PR #10](https://github.com/Himanshu-singh04/shiftproof/pull/10), merged as
+`6efbbd35398dd08a9232bd24cffda0d84fdb474b` after coordinator verification and founder
+approval. No shipped SDK compatibility is claimed. This is research for
 [issue #9](https://github.com/Himanshu-singh04/shiftproof/issues/9), not a migration
 recommendation for a real application or approval of runtime/isolation ADRs.
 
@@ -325,5 +325,8 @@ S3 replay, adversarial B03 isolation, additional platforms/runtimes, full securi
 audit, benchmarks or pilot validation. npm audit was deliberately disabled during
 provisioning. The coordinator independently verified the original research head
 `488314fd97260f2a46366b3cee1bf3301b809893`, including byte-identical captures and all
-ten documented SDK file hashes. Founder approval and coordinator verification of
-the R2/R3 maintenance/documentation correction remain pending.
+ten documented SDK file hashes. Subsequent corrections and founder approval are
+complete; [final coordinator verification](https://github.com/Himanshu-singh04/shiftproof/pull/10#issuecomment-7000545190)
+records the accepted research result. These are historical B01 outcomes; the separate
+[B02 record](b02-runtime-validation.md) investigates the runtime without replacing
+this experiment's original source, fixtures, lock or observations.

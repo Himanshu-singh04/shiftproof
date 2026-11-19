@@ -1,8 +1,9 @@
 # Product requirements: first SDK upgrade
 
 Status: planning approved and merged in [PR #5](https://github.com/Himanshu-singh04/shiftproof/pull/5).
-No product implementation, approved version pair, customer validation, or pilot results exist.
-The [B01 recommendation](b01-sdk-selection.md) has synthetic research evidence only.
+No product implementation, shipped SDK support, customer validation, or pilot results exist.
+The [B01 pair](b01-sdk-selection.md), Stripe 12.18.0 → 13.0.0, is accepted for
+research with synthetic evidence only.
 Architecture choices in the [solution design](specs/001-mvp/solution-design.md) require confirmation.
 
 ## Problem and narrow customer hypothesis
@@ -28,7 +29,8 @@ spent; do not turn this small sample into a general accuracy claim.
 ## Product boundary
 
 - One TypeScript SDK package and one exact source/target version pair per run.
-- First package, source version, target version, and lockfile format: **UNSELECTED**.
+- Research pair: Stripe 12.18.0 → 13.0.0 (B01 accepted). Product runtime/lock format
+  remains gated on [B02 review](b02-runtime-validation.md); shipped support does not exist.
 - Offline analysis and reviewed synthetic/mocked API fixtures come first.
 - Results concern SDK behavior under those fixtures, not actual remote-service compatibility.
 - Static discovery does not execute the repository or its configuration modules.

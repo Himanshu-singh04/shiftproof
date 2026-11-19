@@ -31,7 +31,7 @@ Template headings/order are retained verbatim, including generic example labels.
 ## Constraints
 
 - CON-1: One TypeScript SDK package, one exact lockfile-resolved version pair.
-  Package, source version and target version remain UNSELECTED.
+  Stripe 12.18.0 → 13.0.0 is accepted for research in B01; no shipped support exists.
 - CON-2: Initial execution uses existing local/customer-owned resources at no new
   founder hosting/inference cost. No model or paid fallback is required.
 - CON-3: Offline fixtures establish bounded SDK behavior, not remote-service compatibility.
@@ -426,7 +426,7 @@ All user confirmations are **pending**; no decision below is an approved archite
 | ADR | Proposal and rationale | Trade-off / decision gate |
 | --- | --- | --- |
 | ADR-01 | TypeScript/Node modular CLI; fits source-language analysis and local operation | Exact runtime, parser, package manager and lockfile format unresolved; B02 clean install/identity tests |
-| ADR-02 | One package and exact pair, UNSELECTED; reproducible narrow evidence first | Limited market coverage; B01 candidate matrix, known change/equal control and primary docs |
+| ADR-02 | Stripe 12.18.0 → 13.0.0 accepted for research in B01; product adapter unimplemented | Limited market coverage; accepted B01 evidence is not shipped compatibility |
 | ADR-03 | Reviewed adapter-only replay with enforced network/filesystem/process limits | Platform complexity; B03 prove enforcement or disable replay; child process alone insufficient |
 | ADR-04 | Versioned local JSON, Markdown projection, no database; handle-bound publication | B04/B09 validate closure, links, digest and mount-loss behavior; Node/platform feasibility unresolved; block publication if binding cannot be enforced |
 | ADR-05 | Defer local/customer-owned LLM/RAG explanation until deterministic MVP | Less flexible prose initially; B12 model/license/resource/grounding eval and no paid fallback |

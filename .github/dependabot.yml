@@ -23,3 +23,17 @@ updates:
       - dependency-name: stripe-source
       - dependency-name: stripe-target
       - dependency-name: stripe
+  - package-ecosystem: npm
+    directory: /experiments/b02-runtime-validation
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore(deps)
+    versioning-strategy: lockfile-only
+    # B02 identities require new artifact review/captures, including advisories.
+    # Node and standalone npm archives have manual maintenance; see B02 record.
+    ignore:
+      - dependency-name: typescript
+      - dependency-name: "@typescript/*"
