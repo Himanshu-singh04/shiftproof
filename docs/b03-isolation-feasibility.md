@@ -1,7 +1,8 @@
 # B03: local replay isolation feasibility
 
-Status: investigation for [issue #13](https://github.com/Himanshu-singh04/shiftproof/issues/13).
-Replay remains disabled pending measured enforcement and coordinator review.
+Status: preliminary **no-go / replay-disabled / unknown** for
+[issue #13](https://github.com/Himanshu-singh04/shiftproof/issues/13).
+Final evidence/oracle checks and coordinator review remain pending.
 
 ## Original request and bounded scope
 
@@ -33,7 +34,15 @@ Read-only inventory: macOS 27.2.1 arm64; `/opt/homebrew/bin/node` resolves to
 installed tooling, not an approved B02 pin. `/usr/bin/sandbox-exec` exists; its
 installed Apple manual explicitly marks it deprecated. Node's versioned permission
 documentation says it does not protect against malicious code. Presence and
-documentation alone do not establish measured isolation. Probes have not run yet.
+documentation alone do not establish measured isolation.
+
+Initial actual probes show Node permission-model relative-symlink read/write escapes.
+A diagnostic sandbox-exec policy denies the owned outside sentinel paths, loopback
+network and subprocess/exec probes. It is not a full filesystem allowlist: broader
+restrictive profiles aborted before the Node startup marker, and the command remains
+deprecated. Baseline detached children survive process-group cleanup; separately
+identified owned children are then terminated, without claiming general containment.
+All raw attempts will be retained with explicit oracles in the final record.
 
 Any feasibility must be rerun against the separately approved B02 runtime before
 product replay. B04, adapter and product gates remain unresolved.
