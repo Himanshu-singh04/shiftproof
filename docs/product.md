@@ -1,7 +1,8 @@
 # Product requirements: first SDK upgrade
 
-Status: proposed for review under [issue #4](https://github.com/Himanshu-singh04/shiftproof/issues/4).
-No product implementation, validated version pair, customer validation, or pilot results exist.
+Status: planning approved and merged in [PR #5](https://github.com/Himanshu-singh04/shiftproof/pull/5).
+No product implementation, approved version pair, customer validation, or pilot results exist.
+The [B01 recommendation](b01-sdk-selection.md) has synthetic research evidence only.
 Architecture choices in the [solution design](specs/001-mvp/solution-design.md) require confirmation.
 
 ## Problem and narrow customer hypothesis

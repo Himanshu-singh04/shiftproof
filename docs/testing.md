@@ -1,7 +1,8 @@
 # Testing and evaluation strategy
 
 Status: proposed product test plan. No product test suite or measured results exist.
-Current executable checks are only those in [CONTRIBUTING](../CONTRIBUTING.md).
+Foundation checks are in [CONTRIBUTING](../CONTRIBUTING.md); the separate
+[B01 spike check](b01-sdk-selection.md) verifies research fixtures, not this product test matrix.
 See [product requirements](product.md) and [evidence contract](evidence-contract.md).
 
 ## Current verification
