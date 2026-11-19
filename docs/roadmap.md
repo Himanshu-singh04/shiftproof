@@ -2,7 +2,13 @@
 
 Status: planning approved in PR #5; product implementation has not begun.
 B01 is tracked in [issue #9](https://github.com/Himanshu-singh04/shiftproof/issues/9),
-with a [research recommendation](b01-sdk-selection.md) pending review and approval.
+with an [accepted research pair](b01-sdk-selection.md), merged in PR #10.
+B02 is tracked in [issue #11](https://github.com/Himanshu-singh04/shiftproof/issues/11)
+and the [runtime evidence record](b02-runtime-validation.md), accepted in PR #12
+for Node 26.13.1 / npm 12.2.3 / TypeScript 7.0.2 research tooling.
+[B03 isolation research](b03-isolation-feasibility.md) remains NO-GO / replay disabled:
+independently verified historical Node 26.13.0 probes are not selected-runtime
+containment proof. The B02-main integration awaits coordinator re-review.
 Other task IDs are backlog identifiers, not claims of implementation. Technical ADRs remain gated.
 Dependencies form release gates; a failed gate stops downstream implementation.
 See [product](product.md), [design](specs/001-mvp/solution-design.md),
@@ -26,9 +32,10 @@ report publication remains B09 in M3, after M2's differential evidence pipeline.
 
 ## Initial bounded task: B01 SDK/version selection spike
 
-Budget: at most two working days and three candidate packages; no implementation
-commitment or customer credentials. The first package/source/target pair remains
-**UNSELECTED** until the coordinator and owner review the evidence.
+Original budget: at most two working days and three candidate packages; no implementation
+commitment or customer credentials. Completed in PR #10: Stripe 12.18.0 → 13.0.0
+was selected for research after coordinator and founder review. The criteria below
+describe that completed spike; they do not establish shipped product support.
 
 Entry: approved problem boundary and fixture licensing policy. Investigate:
 

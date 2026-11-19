@@ -3,6 +3,13 @@
 Status: proposed product test plan. No product test suite or measured results exist.
 Foundation checks are in [CONTRIBUTING](../CONTRIBUTING.md); the separate
 [B01 spike check](b01-sdk-selection.md) verifies research fixtures, not this product test matrix.
+The [B02 toolchain record](b02-runtime-validation.md) adds manual darwin-arm64
+offline compile/replay and portable mocked-dispatch identity checks; neither is
+the planned product test suite or B03 sandbox validation.
+The [B03 isolation record](b03-isolation-feasibility.md) retains independently
+verified Node 26.13.0 probes and a portable raw-evidence checker. Its NO-GO remains
+distinct from B02's accepted Node 26.13.1 research toolchain; retained captures do
+not prove selected-runtime containment.
 See [product requirements](product.md) and [evidence contract](evidence-contract.md).
 
 ## Current verification
@@ -14,6 +21,20 @@ new untracked planning documents require an explicit path check or coordinator
 staging before that checker covers them. Do not stage unrelated coordinator work.
 External URLs and Markdown anchors are not checked by the current checker.
 Record actual command results in the review handoff; no product tests are implied.
+
+CI also runs both existing portable research controls:
+
+```sh
+python3 -B experiments/b02-runtime-validation/check.py --scratch /Volumes/AIWorkspace/caches/shiftproof/b02
+python3 -B experiments/b03-isolation-feasibility/check.py
+```
+
+The B02 command uses an existing task-owned scratch directory on this Mac; CI uses
+`$RUNNER_TEMP`. It checks committed identities, retained captures and mocked dispatch.
+The B03 command checks retained observations and measured-source hashes, including
+missing/crashed/false-compatible evidence rejection. Neither executes Node or SDKs.
+Integration checks preserve experiment bytes and historical independent evidence;
+new host probes and selected-runtime reruns require a separate task.
 
 ## Product test matrix
 

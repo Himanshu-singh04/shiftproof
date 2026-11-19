@@ -3,7 +3,9 @@
 Status: measured **no-go / replay-disabled / unknown** for
 [issue #13](https://github.com/Himanshu-singh04/shiftproof/issues/13).
 Worker probe/oracle checks pass. No mechanism is selected for product replay;
-independent coordinator review remains pending.
+the [coordinator independently verified the historical head](https://github.com/Himanshu-singh04/shiftproof/pull/14#issuecomment-7004162398)
+`b1ce6c40b2f5d08c7d70a63c582a88256a9bf103` and recommended research acceptance.
+The integration revision awaits coordinator re-review and later founder approval.
 
 ## Original request and bounded scope
 
@@ -11,10 +13,12 @@ Founder instruction: “ok proceed with the further tasks”, authorizing rollin
 independent work after the B02 worker handoff. Same persistent ShiftProof worker,
 GPT-6 Astra / OpenCode; no subagents or concurrent editor.
 
-Base is approved main `6efbbd35398dd08a9232bd24cffda0d84fdb474b`.
-[B02 PR #12](https://github.com/Himanshu-singh04/shiftproof/pull/12) remains pending
-at `8a0f40c5a44844e08010d143ecd7ac86ae7eb8de`; its code and candidate runtime are
-not incorporated here. B01's historical Stripe pair is approved for research.
+The historical probe base was approved main `6efbbd35398dd08a9232bd24cffda0d84fdb474b`.
+At that time, [B02 PR #12](https://github.com/Himanshu-singh04/shiftproof/pull/12)
+was pending at `8a0f40c5a44844e08010d143ecd7ac86ae7eb8de`; its code and candidate
+runtime were not used for these probes. B01's historical Stripe pair is approved
+for research. Accepted B02 main `68cd7a7b6139383391ffdb8bf0f3ad7ac28fac2b` is now
+merged into this branch without rebasing the independently reviewed B03 history.
 
 Compare at most two installed mechanisms: macOS `sandbox-exec` and observed Node's
 permission model. Use tiny reviewed synthetic probes only, owned sentinel files
@@ -281,7 +285,7 @@ a separately bounded task, then rerun against approved B02 tooling before replay
 | A3 | Met for investigation; product limits unmet | Actual filtered-environment/cap/tree controls demonstrate both bounded cleanup and detachment gap. Whole-tree memory/CPU/descendant enforcement unverified. |
 | A4 | Met via no-go path | Explicit oracles, raw failures and successful controls; deterministic disabled/unknown gate and denied launch; no SDK outside isolation. |
 | A5 | Met | Exact observed tooling, support/attack matrix, residual risk and mandatory approved-B02 rerun; B04/product gates visible. |
-| A6 | Met at worker verification | Probe/evidence checker, repository checker, 25 policy tests, actionlint and full-diff checks pass; independent coordinator review pending. |
+| A6 | Met at worker verification | Probe/evidence checker, repository checker, 25 policy tests, actionlint and full-diff checks pass; historical head independently verified, integration re-review pending. |
 
 Required commands:
 
@@ -294,12 +298,31 @@ git diff --exit-code origin/main -- experiments/b01-sdk-selection
 ```
 
 No CI sandbox execution is added: Linux foundation CI does not prove macOS
-enforcement. The portable raw-evidence checker runs without Node, privileges or
-network; final PR checks/URLs and exact head are in the handoff comment.
+enforcement. CI runs both B02 portable identity controls and B03's portable
+raw-evidence checker without Node, privileges or network for those controls;
+final PR checks/URLs and exact head are in the handoff comment.
 
 Unsupported/prohibited/unrun: external DNS/egress, credential/customer-file access,
 unrelated process signals, privilege changes, hypervisor/image/tool installs,
 system policy changes, resource exhaustion, broader runtime/OS testing, App Sandbox
 deployment, arbitrary customer modules, B01 SDK execution and product replay.
-No paid service was used. Independent coordinator probes and exact-revision review
-are pending; this result authorizes no product replay or architecture approval.
+No paid service was used. Historical independent coordinator probes reproduced
+the findings; integration re-review is pending. This result authorizes no product
+replay or architecture approval.
+
+## Accepted-main integration
+
+The integration-only assignment preserves issue #13 A1–A6 and the original probes.
+B02 accepts Node **26.13.1**, standalone npm **12.2.3**, TypeScript **7.0.2** and
+package-lock v3 for research. B03 captures still describe Node **26.13.0**.
+There were no textual merge conflicts. Status documentation and CI were reconciled
+to retain both portable checkers and accepted B01/B02 scoped maintenance.
+
+B01/B02 experiment files match accepted main; B03 code, fixtures and all captures
+match the independently reviewed historical head. Portable controls recheck those
+identities and retained observations. Coordinator historical checkout/captures
+remain preserved; its independently reproduced observations support the historical
+NO-GO, not Node 26.13.1 containment. No new host isolation probes, selected-runtime
+execution, provisioning or dependency acquisition belong to this integration.
+Future replay requires separately authorized validation against accepted B02 tooling;
+the integration keeps **NO-GO / replay disabled / unknown / ISOLATION_UNAVAILABLE**.
