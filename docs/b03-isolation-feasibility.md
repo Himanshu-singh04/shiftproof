@@ -5,7 +5,11 @@ Status: measured **no-go / replay-disabled / unknown** for
 Worker probe/oracle checks pass. No mechanism is selected for product replay;
 the [coordinator independently verified the historical head](https://github.com/Himanshu-singh04/shiftproof/pull/14#issuecomment-7004162398)
 `b1ce6c40b2f5d08c7d70a63c582a88256a9bf103` and recommended research acceptance.
-The integration revision awaits coordinator re-review and later founder approval.
+The integration revision was subsequently reviewed and accepted as research in
+[PR #14](https://github.com/Himanshu-singh04/shiftproof/pull/14), merged as
+`04c25991698612b9aabe8e2d1bfaee58bf9fb7a8`. Historical pending-review statements
+below describe that earlier handoff. [B03a](b03a-path-decision.md) proposes next-path
+options only; acceptance of B03 does not enable replay.
 
 ## Original request and bounded scope
 
