@@ -8,7 +8,9 @@ and the [runtime evidence record](b02-runtime-validation.md), accepted in PR #12
 for Node 26.13.1 / npm 12.2.3 / TypeScript 7.0.2 research tooling.
 [B03 isolation research](b03-isolation-feasibility.md) remains NO-GO / replay disabled:
 independently verified historical Node 26.13.0 probes are not selected-runtime
-containment proof. The B02-main integration awaits coordinator re-review.
+containment proof. B03 was accepted as research in PR #14. The documentation-only
+[B03a path decision](b03a-path-decision.md) proposes a pause on product-path adoption;
+it does not change the milestones or requirements below.
 Other task IDs are backlog identifiers, not claims of implementation. Technical ADRs remain gated.
 Dependencies form release gates; a failed gate stops downstream implementation.
 See [product](product.md), [design](specs/001-mvp/solution-design.md),
